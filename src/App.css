@@ -1,8 +1,730 @@
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 @import "tailwindcss";
+
+/* ── Theme tokens (default: dark space) ───────────────────── */
+:root {
+  --nav-active-bg: rgba(255, 255, 255, 0.15);
+  --nav-active-color: #ffffff;
+  --nav-inactive-color: rgba(255, 255, 255, 0.5);
+  --nav-hover-bg: rgba(255, 255, 255, 0.08);
+  --nav-hover-color: rgba(255, 255, 255, 0.9);
+}
 
 body {
   margin: 0;
   color: #fff;
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   background-image: linear-gradient(to bottom, #020917, #101725);
+}
+
+/* Default panel backgrounds (when no theme overrides them) */
+.sidebar-root {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.main-panel {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NLB Theme  —  Windows 95 / 2000 corporate banking software
+   ═══════════════════════════════════════════════════════════ */
+body.theme-nlb {
+  background-image: none;
+  background-color: #d4d0c8;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+
+  /* Nav button tokens */
+  --nav-active-bg: #000080;
+  --nav-active-color: #ffffff;
+  --nav-inactive-color: #000000;
+  --nav-hover-bg: #c0bcb4;
+  --nav-hover-color: #000080;
+}
+
+/* Sidebar — raised 3-D panel */
+body.theme-nlb .sidebar-root {
+  background: #d4d0c8;
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #808080,
+    inset 3px 3px 0 #dfdfdf,
+    inset -3px -3px 0 #404040;
+}
+
+/* Main content area — sunken well */
+body.theme-nlb .main-panel {
+  background: #f0ece8;
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #ffffff,
+    inset 2px 2px 0 #404040,
+    inset -2px -2px 0 #dfdfdf;
+}
+
+/* Strip rounded corners everywhere */
+body.theme-nlb button,
+body.theme-nlb input,
+body.theme-nlb textarea,
+body.theme-nlb select,
+body.theme-nlb [class*="rounded"] {
+  border-radius: 0;
+}
+
+/* ── Text: white → near-black variants ── */
+body.theme-nlb .text-white {
+  color: #000000;
+}
+body.theme-nlb [class*="text-white/"] {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Blue links stay readable */
+body.theme-nlb .text-blue-400,
+body.theme-nlb .text-blue-300 {
+  color: #000080;
+}
+body.theme-nlb .text-indigo-400 {
+  color: #000080;
+}
+
+/* Accents: indigo → navy */
+body.theme-nlb .text-indigo-500 {
+  color: #000080;
+}
+
+/* ── Backgrounds: white/opacity → classic gray ── */
+body.theme-nlb [class*="bg-white/"] {
+  background-color: #c8c4bc;
+}
+
+/* ── Borders: white/opacity → gray ── */
+body.theme-nlb [class*="border-white/"] {
+  border-color: #a0a0a0;
+}
+
+/* ── Inputs — sunken inset ── */
+body.theme-nlb input[type="text"],
+body.theme-nlb input:not([type]),
+body.theme-nlb textarea {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid;
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+/* ── Primary/filled buttons — Windows raised ── */
+body.theme-nlb .bg-indigo-500,
+body.theme-nlb .bg-blue-600 {
+  background: #d4d0c8;
+  color: #000000;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #808080;
+  border: 1px solid #808080;
+}
+
+body.theme-nlb .bg-indigo-500:hover,
+body.theme-nlb .hover\:bg-indigo-400:hover,
+body.theme-nlb .bg-blue-600:hover,
+body.theme-nlb .hover\:bg-blue-500:hover {
+  background: #c8c4bc;
+}
+
+/* Chip/toggle active states — navy instead of indigo */
+body.theme-nlb .bg-indigo-500.text-white,
+body.theme-nlb [class*="bg-indigo-"] {
+  background: #000080;
+  color: #ffffff;
+}
+
+/* ── Semantic colors — readable on light Win95 background ── */
+body.theme-nlb .text-green-400,
+body.theme-nlb .text-green-300 {
+  color: #006600;
+}
+
+body.theme-nlb .text-red-400,
+body.theme-nlb .text-red-300 {
+  color: #cc0000;
+}
+
+body.theme-nlb [class*="text-yellow-"] {
+  color: #806600;
+}
+
+body.theme-nlb [class*="bg-red-"] {
+  background-color: rgba(204, 0, 0, 0.08);
+}
+body.theme-nlb [class*="bg-yellow-"] {
+  background-color: rgba(180, 120, 0, 0.08);
+}
+body.theme-nlb [class*="bg-green-"] {
+  background-color: rgba(0, 120, 0, 0.08);
+}
+
+body.theme-nlb [class*="border-red-"] {
+  border-color: rgba(204, 0, 0, 0.35);
+}
+body.theme-nlb [class*="border-yellow-"] {
+  border-color: rgba(180, 120, 0, 0.35);
+}
+body.theme-nlb [class*="border-green-"] {
+  border-color: rgba(0, 120, 0, 0.3);
+}
+
+/* ── Scrollbars (Webkit) ── */
+body.theme-nlb ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+body.theme-nlb ::-webkit-scrollbar-track {
+  background: #d4d0c8;
+}
+body.theme-nlb ::-webkit-scrollbar-thumb {
+  background: #c8c4bc;
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+}
+body.theme-nlb ::-webkit-scrollbar-button {
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  display: block;
+  height: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Mac Theme  —  Classic Macintosh (System 6/7, MacPaint era)
+   ═══════════════════════════════════════════════════════════ */
+body.theme-mac {
+  /* 2×2 checkerboard dither — the iconic Mac desktop pattern */
+  background-color: #888888;
+  background-image:
+    repeating-conic-gradient(#000000 0% 25%, #ffffff 0% 50%) 0 0 / 2px 2px;
+  color: #000000;
+  font-family:
+    "Chicago", "Geneva", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+
+  --nav-active-bg: #000000;
+  --nav-active-color: #ffffff;
+  --nav-inactive-color: #000000;
+  --nav-hover-bg: #dddddd;
+  --nav-hover-color: #000000;
+}
+
+/* Sidebar — Mac tool palette window */
+body.theme-mac .sidebar-root {
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: 1px 1px 0 #000000;
+}
+
+/* Main panel — Mac document window */
+body.theme-mac .main-panel {
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: 1px 1px 0 #000000;
+}
+
+/* Strip rounded corners everywhere */
+body.theme-mac button,
+body.theme-mac input,
+body.theme-mac textarea,
+body.theme-mac select,
+body.theme-mac [class*="rounded"] {
+  border-radius: 0;
+}
+
+/* Text: white → black */
+body.theme-mac .text-white {
+  color: #000000;
+}
+body.theme-mac [class*="text-white/"] {
+  color: rgba(0, 0, 0, 0.55);
+}
+body.theme-mac .text-blue-400,
+body.theme-mac .text-blue-300,
+body.theme-mac .text-indigo-400,
+body.theme-mac .text-indigo-500 {
+  color: #000000;
+}
+
+/* Backgrounds: dark/opacity → light gray */
+body.theme-mac [class*="bg-white/"] {
+  background-color: #eeeeee;
+}
+
+/* Borders: white/opacity → black */
+body.theme-mac [class*="border-white/"] {
+  border-color: #000000;
+}
+
+/* Dashed borders (new artwork button etc.) */
+body.theme-mac [class*="border-dashed"] {
+  border-color: #000000;
+}
+
+/* Inputs — sunken white field */
+body.theme-mac input[type="text"],
+body.theme-mac input:not([type]),
+body.theme-mac textarea {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  box-shadow: none;
+  font-family: "Chicago", "Geneva", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
+
+/* Primary / filled buttons — classic Mac default button (thick border) */
+body.theme-mac .bg-indigo-500,
+body.theme-mac .bg-blue-600 {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: none;
+}
+
+body.theme-mac .bg-indigo-500:hover,
+body.theme-mac .hover\:bg-indigo-400:hover,
+body.theme-mac .bg-blue-600:hover,
+body.theme-mac .hover\:bg-blue-500:hover {
+  background: #dddddd;
+}
+
+/* Active toggle chips — invert to black */
+body.theme-mac .bg-indigo-500.text-white,
+body.theme-mac [class*="bg-indigo-"] {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Gallery item thumbnails */
+body.theme-mac [class*="bg-["] {
+  background-color: #eeeeee;
+}
+
+/* ── Semantic colors — readable on white Mac background ── */
+body.theme-mac .text-green-400,
+body.theme-mac .text-green-300 {
+  color: #006600;
+}
+
+body.theme-mac .text-red-400,
+body.theme-mac .text-red-300 {
+  color: #cc0000;
+}
+
+body.theme-mac [class*="text-yellow-"] {
+  color: #806600;
+}
+
+body.theme-mac [class*="bg-red-"] {
+  background-color: rgba(204, 0, 0, 0.07);
+}
+body.theme-mac [class*="bg-yellow-"] {
+  background-color: rgba(180, 120, 0, 0.07);
+}
+body.theme-mac [class*="bg-green-"] {
+  background-color: rgba(0, 120, 0, 0.07);
+}
+
+body.theme-mac [class*="border-red-"] {
+  border-color: rgba(204, 0, 0, 0.4);
+}
+body.theme-mac [class*="border-yellow-"] {
+  border-color: rgba(180, 120, 0, 0.4);
+}
+body.theme-mac [class*="border-green-"] {
+  border-color: rgba(0, 120, 0, 0.35);
+}
+
+/* Scrollbars — classic Mac narrow style */
+body.theme-mac ::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+}
+body.theme-mac ::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-left: 1px solid #000000;
+}
+body.theme-mac ::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border: 1px solid #000000;
+}
+body.theme-mac ::-webkit-scrollbar-button {
+  background: #ffffff;
+  border: 1px solid #000000;
+  display: block;
+  height: 15px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Opera Theme  —  Opera browser (modern dark + signature red)
+   ═══════════════════════════════════════════════════════════ */
+body.theme-opera {
+  background-image: none;
+  background-color: #0f0f0f;
+  color: #e8e8e8;
+  font-family:
+    "Opera Sans", "Helvetica Neue", Inter, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+
+  --nav-active-bg: #ff1b2d;
+  --nav-active-color: #ffffff;
+  --nav-inactive-color: rgba(232, 232, 232, 0.55);
+  --nav-hover-bg: rgba(255, 27, 45, 0.12);
+  --nav-hover-color: #ff1b2d;
+}
+
+body.theme-opera .sidebar-root {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+body.theme-opera .main-panel {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Text */
+body.theme-opera .text-white {
+  color: #e8e8e8;
+}
+body.theme-opera [class*="text-white/"] {
+  color: rgba(232, 232, 232, 0.5);
+}
+body.theme-opera .text-blue-400,
+body.theme-opera .text-blue-300,
+body.theme-opera .text-indigo-400,
+body.theme-opera .text-indigo-500 {
+  color: #ff1b2d;
+}
+
+/* Backgrounds */
+body.theme-opera [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Borders */
+body.theme-opera [class*="border-white/"] {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Inputs */
+body.theme-opera input[type="text"],
+body.theme-opera input:not([type]),
+body.theme-opera textarea {
+  background: #222222;
+  color: #e8e8e8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+body.theme-opera input[type="text"]:focus,
+body.theme-opera input:not([type]):focus,
+body.theme-opera textarea:focus {
+  border-color: #ff1b2d;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 27, 45, 0.25);
+}
+
+/* Primary buttons — Opera red */
+body.theme-opera .bg-indigo-500,
+body.theme-opera .bg-blue-600 {
+  background: #ff1b2d;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(255, 27, 45, 0.4);
+}
+body.theme-opera .bg-indigo-500:hover,
+body.theme-opera .hover\:bg-indigo-400:hover,
+body.theme-opera .bg-blue-600:hover,
+body.theme-opera .hover\:bg-blue-500:hover {
+  background: #e5172a;
+  box-shadow: 0 4px 12px rgba(255, 27, 45, 0.5);
+}
+
+/* Active toggle chips — Opera red */
+body.theme-opera .bg-indigo-500.text-white,
+body.theme-opera [class*="bg-indigo-"] {
+  background: #ff1b2d;
+  color: #ffffff;
+}
+
+/* Accent on range sliders */
+body.theme-opera input[type="range"] {
+  accent-color: #ff1b2d;
+}
+
+/* Scrollbars — sleek dark */
+body.theme-opera ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.theme-opera ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.theme-opera ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+body.theme-opera ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 27, 45, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Pixel Editor — boxy pixel-art workbench theme
+   Scoped to .pixel-editor-ui so other gadgets are unaffected
+   ═══════════════════════════════════════════════════════════ */
+
+.pixel-editor-ui {
+  font-family: "VT323", "Courier New", monospace;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+/* Hard boxy — strip all rounding */
+.pixel-editor-ui * {
+  border-radius: 0;
+}
+
+/* Raised-pixel button effect */
+.pixel-editor-ui button:not([disabled]) {
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.22),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.55);
+}
+.pixel-editor-ui button:active:not([disabled]) {
+  box-shadow:
+    inset 1px 1px 0 rgba(0, 0, 0, 0.55),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.22);
+  translate: 1px 1px;
+}
+
+/* Controls column — dot-matrix texture */
+.pixel-editor-controls {
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px) 0 0
+    / 6px 6px,
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 10px;
+}
+
+/* Canvas workbench — scanline texture + border */
+.pixel-editor-canvas-wrap {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.07) 3px,
+      rgba(0, 0, 0, 0.07) 4px
+    ), rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  padding: 10px;
+  box-shadow:
+    inset 1px 1px 0 rgba(0, 0, 0, 0.6),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Section labels — ALL CAPS pixel-style */
+.pixel-editor-ui .pixel-label {
+  font-family: "VT323", monospace;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* Canvas element — hard pixel border */
+.pixel-editor-ui canvas {
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  image-rendering: pixelated;
+}
+
+/* Gallery thumbnails — boxy frames */
+.pixel-editor-ui .gallery-item {
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+.pixel-editor-ui .gallery-item:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+  translate: -1px -1px;
+}
+
+/* New artwork button */
+.pixel-editor-ui .gallery-new {
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+.pixel-editor-ui .gallery-new:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Palette swatches — hard pixel squares */
+.pixel-editor-ui .palette-swatch {
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.3),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.35);
+  transition: none;
+}
+.pixel-editor-ui .palette-swatch.active {
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.3),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.8);
+}
+.pixel-editor-ui .palette-swatch:hover:not(.active) {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Legal Theme  —  aged parchment / legal document
+   ═══════════════════════════════════════════════════════════ */
+body.theme-legal {
+  background-image: none;
+  background-color: #d6c9a8;
+  color: #1c1a14;
+  font-family: Georgia, "Times New Roman", Times, serif;
+
+  --nav-active-bg: #44372a;
+  --nav-active-color: #f5f0e8;
+  --nav-inactive-color: rgba(28, 26, 20, 0.6);
+  --nav-hover-bg: rgba(68, 55, 42, 0.1);
+  --nav-hover-color: #44372a;
+}
+
+body.theme-legal .sidebar-root {
+  background: #c8bb98;
+  border-color: rgba(68, 55, 42, 0.3);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.theme-legal .main-panel {
+  background: #f5f0e8;
+  border-color: rgba(68, 55, 42, 0.25);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.theme-legal .text-white {
+  color: #1c1a14;
+}
+body.theme-legal [class*="text-white/"] {
+  color: rgba(28, 26, 20, 0.55);
+}
+
+/* Scrollbar — parchment style */
+body.theme-legal ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+body.theme-legal ::-webkit-scrollbar-track {
+  background: #c8bb98;
+}
+body.theme-legal ::-webkit-scrollbar-thumb {
+  background: #a89878;
+  border: 1px solid #8c7c60;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Home Theme  —  terminal / monospace, black + #FDE311
+   ═══════════════════════════════════════════════════════════ */
+body.theme-home {
+  background-image: none;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+
+  --nav-active-bg: #fde311;
+  --nav-active-color: #000000;
+  --nav-inactive-color: rgba(255, 255, 255, 0.5);
+  --nav-hover-bg: rgba(253, 227, 17, 0.12);
+  --nav-hover-color: #fde311;
+}
+
+body.theme-home .sidebar-root {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(253, 227, 17, 0.15);
+}
+
+body.theme-home .main-panel {
+  background: #000000;
+  border-color: rgba(253, 227, 17, 0.15);
+}
+
+/* Font inheritance */
+body.theme-home * {
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* Headings — yellow accent */
+body.theme-home h1,
+body.theme-home .text-white {
+  color: #fde311;
+}
+
+/* Muted text stays white-toned */
+body.theme-home [class*="text-white/"] {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Links — yellow */
+body.theme-home .text-blue-400,
+body.theme-home .text-blue-300 {
+  color: #fde311;
+}
+
+/* Code blocks */
+body.theme-home [class*="bg-white/"] {
+  background-color: rgba(253, 227, 17, 0.06);
+}
+body.theme-home [class*="border-white/"] {
+  border-color: rgba(253, 227, 17, 0.2);
+}
+
+/* Inline + block code */
+body.theme-home code {
+  color: #fde311;
+  background-color: rgba(253, 227, 17, 0.08);
+}
+
+/* Scrollbar — minimal terminal style */
+body.theme-home ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+body.theme-home ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.theme-home ::-webkit-scrollbar-thumb {
+  background: rgba(253, 227, 17, 0.3);
+}
+body.theme-home ::-webkit-scrollbar-thumb:hover {
+  background: rgba(253, 227, 17, 0.6);
 }

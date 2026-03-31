@@ -1,5 +1,6 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
+import { Card } from './components/ui/card';
 import { gadgets } from './gadgets';
 import { LocaleProvider } from './i18n/LocaleContext';
 import { useRoute } from './router';
@@ -13,6 +14,14 @@ const App = () => {
   const activeGadget = gadgets.find((g) => g.id === gadgetId) ?? gadgets[0];
   const GadgetComponent = activeGadget.component;
 
+  useEffect(() => {
+    const theme = activeGadget.theme;
+    document.body.className = theme ? `theme-${theme}` : '';
+    return () => {
+      document.body.className = '';
+    };
+  }, [activeGadget.theme]);
+
   return (
     <LocaleProvider>
       <div className="flex h-screen p-4 gap-4">
@@ -23,12 +32,13 @@ const App = () => {
           minimal={minimal}
           onToggleMinimal={() => setMinimal((m) => !m)}
         />
-        <div
-          className="flex-1 border border-white/10 rounded-xl p-6 overflow-auto"
-          style={{ background: 'rgba(255,255,255,0.03)' }}
+        <Card
+          rounded="xl"
+          padding="xl"
+          className="flex-1 overflow-auto main-panel"
         >
           <Suspense>{GadgetComponent && <GadgetComponent />}</Suspense>
-        </div>
+        </Card>
       </div>
     </LocaleProvider>
   );

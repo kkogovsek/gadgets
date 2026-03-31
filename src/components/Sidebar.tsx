@@ -2,6 +2,8 @@ import { ChevronsLeft, ChevronsRight, Globe } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import type { Gadget } from '../gadgets';
 import { useLocale } from '../i18n/LocaleContext';
+import { cn } from '../lib/utils';
+import { Button, buttonVariants, LinkButton } from './ui/button';
 
 const GitHubIcon = ({ size = 18 }: { size?: number }) => (
   <svg
@@ -44,24 +46,24 @@ export const Sidebar = ({
       defaultMessage: gadget.name,
     });
     return (
-      <button
+      <LinkButton
         key={gadget.id}
-        type="button"
-        onClick={() => onSelect(gadget.id)}
+        href={`/${gadget.id}`}
+        variant="ghost"
+        size="nav"
+        active={isActive}
+        onClick={(e) => {
+          e.preventDefault();
+          onSelect(gadget.id);
+        }}
         title={minimal ? displayName : undefined}
-        className={`flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors cursor-pointer ${
-          minimal ? 'justify-center' : ''
-        } ${
-          isActive
-            ? 'bg-white/15 text-white'
-            : 'text-white/50 hover:bg-white/8 hover:text-white/90'
-        }`}
+        className={minimal ? 'justify-center' : 'justify-start'}
       >
-        <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+        <Icon size={minimal ? 24 : 18} strokeWidth={isActive ? 2.5 : 2} />
         {!minimal && (
           <span className="text-sm font-medium truncate">{displayName}</span>
         )}
-      </button>
+      </LinkButton>
     );
   };
 
@@ -69,8 +71,10 @@ export const Sidebar = ({
 
   return (
     <div
-      className={`flex flex-col border border-white/10 rounded-xl p-3 gap-1 transition-all duration-200 ${minimal ? 'w-14' : 'w-52'}`}
-      style={{ background: 'rgba(255,255,255,0.03)' }}
+      className={cn(
+        'sidebar-root flex flex-col border border-white/10 rounded-xl gap-1 transition-all duration-200',
+        minimal ? 'w-14 p-2' : 'w-52 p-3',
+      )}
     >
       <div className="flex-1 flex flex-col gap-1 overflow-y-auto">
         {mainGadgets.map(renderGadgetButton)}
@@ -82,10 +86,13 @@ export const Sidebar = ({
         href="https://github.com/kkogovsek/gadgets"
         target="_blank"
         rel="noreferrer"
-        className={`flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors text-white/50 hover:bg-white/8 hover:text-white/90 ${minimal ? 'justify-center' : ''}`}
+        className={cn(
+          buttonVariants({ variant: 'ghost', size: 'nav', active: false }),
+          minimal ? 'justify-center' : 'justify-start',
+        )}
         title={intl.formatMessage({ id: 'sidebar.github' })}
       >
-        <GitHubIcon size={18} />
+        <GitHubIcon size={minimal ? 24 : 18} />
         {!minimal && (
           <span className="text-sm font-medium">
             {intl.formatMessage({ id: 'sidebar.github' })}
@@ -93,32 +100,36 @@ export const Sidebar = ({
         )}
       </a>
 
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="nav"
+        active={false}
         onClick={toggleLocale}
-        className={`flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors cursor-pointer text-white/50 hover:bg-white/8 hover:text-white/90 ${minimal ? 'justify-center' : ''}`}
         title={intl.formatMessage({ id: 'sidebar.language' })}
+        className={minimal ? 'justify-center' : 'justify-start'}
       >
-        <Globe size={18} strokeWidth={2} />
+        <Globe size={minimal ? 24 : 18} strokeWidth={2} />
         {!minimal && (
           <span className="text-sm font-medium">
             {locale === 'en' ? 'EN' : 'SL'}
           </span>
         )}
-      </button>
+      </Button>
 
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="nav"
+        active={false}
         onClick={onToggleMinimal}
-        className={`flex items-center gap-3 px-2.5 py-2 rounded-lg transition-colors cursor-pointer text-white/50 hover:bg-white/8 hover:text-white/90 ${minimal ? 'justify-center' : ''}`}
         title={
           minimal
             ? intl.formatMessage({ id: 'sidebar.expand-title' })
             : intl.formatMessage({ id: 'sidebar.collapse-title' })
         }
+        className={minimal ? 'justify-center' : 'justify-start'}
       >
         {minimal ? (
-          <ChevronsRight size={18} strokeWidth={2} />
+          <ChevronsRight size={22} strokeWidth={2} />
         ) : (
           <ChevronsLeft size={18} strokeWidth={2} />
         )}
@@ -127,7 +138,7 @@ export const Sidebar = ({
             {intl.formatMessage({ id: 'sidebar.collapse' })}
           </span>
         )}
-      </button>
+      </Button>
     </div>
   );
 };

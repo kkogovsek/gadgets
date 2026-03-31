@@ -51,3 +51,25 @@ That's it — the gadget appears in the sidebar automatically.
 - Use Tailwind classes for styling; keep dark-theme in mind (white text, `text-white/50` for muted)
 - Keep gadgets self-contained — no shared state between gadgets
 - Use `lucide-react` for all icons — no emoji or other icon libraries
+
+## Internationalisation (i18n)
+
+All user-visible strings **must** use translations — never hardcode English text in JSX.
+
+The app uses `react-intl`. Pattern to follow in every gadget:
+
+```tsx
+import { useIntl } from 'react-intl';
+
+export const MyGadget = () => {
+  const intl = useIntl();
+  const t = (id: string, values?: Record<string, string | number>) =>
+    intl.formatMessage({ id }, values);
+
+  return <h2>{t('mygadget.title')}</h2>;
+};
+```
+
+- Add all keys to **both** `src/i18n/messages/en.ts` and `src/i18n/messages/sl.ts`.
+- Use namespaced keys: `gadget.<id>.name` for the sidebar name (already read by Sidebar automatically), and `<prefix>.<key>` for UI strings (e.g. `pixel.save`, `icon.download`).
+- Interpolated values: `t('key', { count: 3 })` with `{count}` in the message string.

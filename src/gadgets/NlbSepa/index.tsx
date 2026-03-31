@@ -10,6 +10,10 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { MarkdownView } from '../../components/MarkdownView';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
 import infoMdEn from './INFO.md?raw';
 import infoMdSl from './INFO.sl.md?raw';
 import {
@@ -261,34 +265,32 @@ function PreviewPanel({
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div className="flex items-center gap-1 px-4 pt-3 border-b border-white/10 shrink-0">
-        <button
-          type="button"
+        <Button
+          variant="tabUnderline"
+          size="md"
+          active={tab === 'checks'}
           onClick={() => setTab('checks')}
-          className={`text-xs px-3 py-1.5 border-b-2 -mb-px transition-colors ${
-            tab === 'checks'
-              ? 'border-blue-400 text-white'
-              : 'border-transparent text-white/40 hover:text-white/70'
-          }`}
+          className="text-xs px-3 py-1.5"
         >
           {intl.formatMessage({ id: 'nlb.checks' })}
           {totalIssues > 0 && (
-            <span className="ml-1.5 text-[10px] bg-red-500/30 text-red-300 rounded-full px-1.5 py-0.5">
+            <Badge variant="error" size="xs" className="ml-1.5">
               {totalIssues}
-            </span>
+            </Badge>
           )}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="tabUnderline"
+          size="md"
+          active={tab === 'transactions'}
           onClick={() => setTab('transactions')}
-          className={`text-xs px-3 py-1.5 border-b-2 -mb-px transition-colors ${
-            tab === 'transactions'
-              ? 'border-blue-400 text-white'
-              : 'border-transparent text-white/40 hover:text-white/70'
-          }`}
+          className="text-xs px-3 py-1.5"
         >
           {intl.formatMessage({ id: 'nlb.transactions' })}
-          <span className="ml-1.5 text-[10px] text-white/30">{count}</span>
-        </button>
+          <Badge variant="count" size="xs" className="ml-1.5">
+            {count}
+          </Badge>
+        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-0">
@@ -298,36 +300,30 @@ function PreviewPanel({
             <span className="text-xs text-white/40">
               {intl.formatMessage({ id: 'nlb.currency-filter' })}
             </span>
-            <button
-              type="button"
+            <Button
+              variant="chip"
+              size="xs"
+              active={selectedCurrency === null}
               onClick={() => setSelectedCurrency(null)}
-              className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
-                selectedCurrency === null
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/40 hover:text-white/70'
-              }`}
             >
               {intl.formatMessage({ id: 'nlb.currency-all' })}
-            </button>
+            </Button>
             {currencies.map((c) => (
-              <button
+              <Button
                 key={c}
-                type="button"
+                variant="chip"
+                size="xs"
+                active={selectedCurrency === c}
                 onClick={() => setSelectedCurrency(c)}
-                className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
-                  selectedCurrency === c
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/40 hover:text-white/70'
-                }`}
               >
                 {c}
-              </button>
+              </Button>
             ))}
           </div>
         )}
 
         {/* Summary stats */}
-        <div className="flex flex-col gap-2 border border-white/10 rounded-lg px-4 py-3">
+        <Card padding="md" className="flex flex-col gap-2">
           {statsByCcy.map(({ ccy, credits, debits, net, charges }) => (
             <div key={ccy} className="flex flex-wrap gap-x-6 gap-y-2">
               <StatCell
@@ -362,7 +358,7 @@ function PreviewPanel({
                 : undefined
             }
           />
-        </div>
+        </Card>
 
         {tab === 'checks' && (
           <>
@@ -637,36 +633,38 @@ export const NlbSepa = () => {
       {/* Left column: account info + upload + files + months */}
       <div className="flex flex-col gap-3 w-64 shrink-0">
         {/* Account info */}
-        <div className="flex flex-col gap-2 border border-white/10 rounded-lg px-3 py-2.5">
+        <Card padding="sm" className="flex flex-col gap-2">
           <span className="text-xs text-white/50 font-medium">
             {intl.formatMessage({ id: 'nlb.account' })}
           </span>
-          <input
+          <Input
             type="text"
+            variant="subtle"
+            size="sm"
             placeholder={intl.formatMessage({ id: 'nlb.iban-placeholder' })}
             value={accountIban}
             onChange={(e) => {
               setAccountIban(e.target.value);
               localStorage.setItem(LS_IBAN, e.target.value);
             }}
-            className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder-white/25 focus:outline-none focus:border-white/30 w-full"
           />
           <div className="flex flex-col gap-0.5">
-            <input
+            <Input
               type="text"
+              variant="subtle"
+              size="sm"
               placeholder={intl.formatMessage({ id: 'nlb.owner-placeholder' })}
               value={accountOwner}
               onChange={(e) => {
                 setAccountOwner(e.target.value);
                 localStorage.setItem(LS_OWNER, e.target.value);
               }}
-              className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder-white/25 focus:outline-none focus:border-white/30 w-full"
             />
             <span className="text-xs text-white/30">
               {intl.formatMessage({ id: 'nlb.owner-hint' })}
             </span>
           </div>
-        </div>
+        </Card>
 
         {/* Drop zone */}
         <button
@@ -748,31 +746,25 @@ export const NlbSepa = () => {
               <span className="text-xs text-white/50 font-medium">
                 {intl.formatMessage({ id: 'nlb.months' })}
               </span>
-              <button
-                type="button"
-                onClick={selectAll}
-                className="text-xs text-blue-400 hover:text-blue-300"
-              >
+              <Button variant="link" size="xs" onClick={selectAll}>
                 {intl.formatMessage({ id: 'nlb.all' })}
-              </button>
-              <button
-                type="button"
-                onClick={selectNone}
-                className="text-xs text-white/40 hover:text-white/60"
-              >
+              </Button>
+              <Button variant="linkMuted" size="xs" onClick={selectNone}>
                 {intl.formatMessage({ id: 'nlb.none' })}
-              </button>
+              </Button>
             </div>
             <div className="flex flex-col gap-1 overflow-y-auto">
               {allMonths.map((key) => (
-                <button
+                <Button
                   key={key}
-                  type="button"
+                  variant="toggleOutline"
+                  size="md"
+                  active={selectedMonths.has(key)}
                   onClick={() => toggleMonth(key)}
-                  className={`text-xs px-3 py-1.5 rounded border text-left transition-colors ${selectedMonths.has(key) ? 'bg-blue-500/30 border-blue-400 text-blue-200' : 'border-white/15 text-white/50 hover:border-white/30'}`}
+                  className="text-left justify-start"
                 >
                   {monthLabel(key, intl.locale)}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -821,20 +813,22 @@ export const NlbSepa = () => {
 
         {/* Toolbar */}
         <div className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-black/40 backdrop-blur rounded-full shadow-lg">
-          <button
-            type="button"
+          <Button
+            variant="icon"
+            size="icon"
             onClick={() => setShowInfo((v) => !v)}
             title={intl.formatMessage({ id: 'nlb.about' })}
-            className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${showInfo ? 'bg-white/20 text-white' : 'hover:bg-white/15 text-white/60 hover:text-white'}`}
+            className={showInfo ? 'bg-white/20 text-white' : ''}
           >
             <HelpCircle size={15} />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="icon"
+            size="icon"
             onClick={() => setShowPreview((v) => !v)}
             disabled={!summary || showInfo}
             title={intl.formatMessage({ id: 'nlb.preview' })}
-            className="relative flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="relative"
           >
             <Eye size={15} className="text-white" />
             {summary && (
@@ -842,16 +836,16 @@ export const NlbSepa = () => {
                 {hasIssues ? '⚠️' : '✅'}
               </span>
             )}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="iconPrimary"
+            size="icon"
             onClick={download}
             disabled={!xml}
             title={intl.formatMessage({ id: 'nlb.download' })}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            <Download size={15} className="text-white" />
-          </button>
+            <Download size={15} />
+          </Button>
         </div>
       </div>
     </div>
