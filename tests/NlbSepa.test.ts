@@ -2,12 +2,11 @@ import { describe, expect, test } from '@rstest/core';
 import {
   esc,
   generateXml,
-  isIban,
   monthLabel,
+  type ParsedFile,
   parseCsv,
   parseFile,
   parseSlDate,
-  type ParsedFile,
 } from '../src/gadgets/NlbSepa/logic';
 
 // ─── esc ────────────────────────────────────────────────────────────────────
@@ -102,8 +101,12 @@ describe('parseCsv', () => {
 
   test('handles quoted field with embedded newline', () => {
     // NLB namen field sometimes contains commas in quotes
-    const result = parseCsv('"NAKUP ABC, TEČAJ: SEK/EUR 10,00",Finance,-,13.63');
-    expect(result).toEqual([['NAKUP ABC, TEČAJ: SEK/EUR 10,00', 'Finance', '-', '13.63']]);
+    const result = parseCsv(
+      '"NAKUP ABC, TEČAJ: SEK/EUR 10,00",Finance,-,13.63',
+    );
+    expect(result).toEqual([
+      ['NAKUP ABC, TEČAJ: SEK/EUR 10,00', 'Finance', '-', '13.63'],
+    ]);
   });
 });
 
@@ -175,8 +178,11 @@ describe('parseFile', () => {
     expect(result.filename).toBe('my-account.csv');
   });
 
-  test('skips rows with fewer than 4 columns', () => {
-    const csv = makeCsv('bad,row', 'PROVIZIJA,Finance,-,0.40,EUR,1. 1. 2026,,,,,,,,1. 1. 2026,,1234567890');
+  test('skips rows with fewer than 2 columns', () => {
+    const csv = makeCsv(
+      'bad',
+      'PROVIZIJA,Finance,-,0.40,EUR,1. 1. 2026,,,,,,,,1. 1. 2026,,1234567890',
+    );
     const { transactions } = parseFile('account.csv', csv);
     expect(transactions).toHaveLength(1);
   });
@@ -188,27 +194,11 @@ describe('parseFile', () => {
       'C,X,+,30.00,EUR,28. 2. 2026,,,,,,,,28. 2. 2026,,1003',
     );
     const { transactions } = parseFile('account.csv', csv);
-    expect(transactions.map(t => t.monthKey)).toEqual(['2026-01', '2026-02', '2026-02']);
-  });
-});
-
-// ─── isIban ──────────────────────────────────────────────────────────────────
-
-describe('isIban', () => {
-  test('recognises Slovenian IBAN', () => {
-    expect(isIban('SI56999900001111222')).toBe(true);
-  });
-
-  test('recognises Swedish IBAN', () => {
-    expect(isIban('SE3550000000054910000003')).toBe(true);
-  });
-
-  test('rejects a non-IBAN account number', () => {
-    expect(isIban('51171088337')).toBe(false);
-  });
-
-  test('rejects empty string', () => {
-    expect(isIban('')).toBe(false);
+    expect(transactions.map((t) => t.monthKey)).toEqual([
+      '2026-01',
+      '2026-02',
+      '2026-02',
+    ]);
   });
 });
 
@@ -261,7 +251,9 @@ describe('generateXml', () => {
   test('generates valid XML with correct root element', () => {
     const xml = generateXml([makeFile()], new Set(['2026-01']));
     expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>');
-    expect(xml).toContain('<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08"');
+    expect(xml).toContain(
+      '<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02"',
+    );
     expect(xml).toContain('<BkToCstmrStmt>');
   });
 
@@ -277,7 +269,9 @@ describe('generateXml', () => {
 
   test('credit transaction uses CRDT indicator', () => {
     const file = makeFile({
-      transactions: [{ ...makeFile().transactions[0], direction: '+', monthKey: '2026-01' }],
+      transactions: [
+        { ...makeFile().transactions[0], direction: '+', monthKey: '2026-01' },
+      ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
     expect(xml).toContain('<CdtDbtInd>CRDT</CdtDbtInd>');
@@ -288,24 +282,34 @@ describe('generateXml', () => {
     expect(xml).toContain('<IBAN>SI56111100002222333</IBAN>');
   });
 
-  test('non-IBAN account number uses Othr tag', () => {
+  test('non-IBAN account number uses IBAN tag', () => {
     const file = makeFile({
-      transactions: [{ ...makeFile().transactions[0], racun: '51171088337', monthKey: '2026-01' }],
+      transactions: [
+        {
+          ...makeFile().transactions[0],
+          racun: '51171088337',
+          monthKey: '2026-01',
+        },
+      ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
-    expect(xml).toContain('<Othr><Id>51171088337</Id></Othr>');
+    expect(xml).toContain('<IBAN>51171088337</IBAN>');
   });
 
-  test('referenca goes into CdtrRefInf', () => {
+  test('referenca goes into EndToEndId', () => {
     const xml = generateXml([makeFile()], new Set(['2026-01']));
-    expect(xml).toContain('<Ref>SI00123456</Ref>');
-    expect(xml).toContain('<CdtrRefInf>');
+    expect(xml).toContain('<EndToEndId>SI00123456</EndToEndId>');
   });
 
   test('namen used as Ustrd when referenca is empty', () => {
     const file = makeFile({
       transactions: [
-        { ...makeFile().transactions[0], referenca: '', namen: 'SOME DESCRIPTION', monthKey: '2026-01' },
+        {
+          ...makeFile().transactions[0],
+          referenca: '',
+          namen: 'SOME DESCRIPTION',
+          monthKey: '2026-01',
+        },
       ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
@@ -328,8 +332,18 @@ describe('generateXml', () => {
       filename: 'account.csv',
       currency: 'EUR',
       transactions: [
-        { ...makeFile().transactions[0], datumPlacila: '2026-01-05', monthKey: '2026-01', idTransakcije: 'TXN-JAN-001' },
-        { ...makeFile().transactions[0], datumPlacila: '2026-02-10', monthKey: '2026-02', idTransakcije: 'TXN-FEB-002' },
+        {
+          ...makeFile().transactions[0],
+          datumPlacila: '2026-01-05',
+          monthKey: '2026-01',
+          idTransakcije: 'TXN-JAN-001',
+        },
+        {
+          ...makeFile().transactions[0],
+          datumPlacila: '2026-02-10',
+          monthKey: '2026-02',
+          idTransakcije: 'TXN-FEB-002',
+        },
       ],
     };
     const xml = generateXml([file], new Set(['2026-01']));
@@ -340,14 +354,19 @@ describe('generateXml', () => {
   test('escapes special characters in namen', () => {
     const file = makeFile({
       transactions: [
-        { ...makeFile().transactions[0], referenca: '', namen: 'A&B <test>', monthKey: '2026-01' },
+        {
+          ...makeFile().transactions[0],
+          referenca: '',
+          namen: 'A&B <test>',
+          monthKey: '2026-01',
+        },
       ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
     expect(xml).toContain('A&amp;B &lt;test&gt;');
   });
 
-  test('includes exchange rate block for foreign currency', () => {
+  test('includes amount and currency for foreign currency transaction', () => {
     const file = makeFile({
       currency: 'SEK',
       transactions: [
@@ -361,10 +380,8 @@ describe('generateXml', () => {
       ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
-    expect(xml).toContain('<AmtDtls>');
-    expect(xml).toContain('<XchgRate>10.9100</XchgRate>');
-    expect(xml).toContain('<SrcCcy>SEK</SrcCcy>');
-    expect(xml).toContain('<TrgtCcy>EUR</TrgtCcy>');
+    expect(xml).toContain('<Amt Ccy="SEK">140000.00</Amt>');
+    expect(xml).toContain('<Ccy>SEK</Ccy>');
   });
 
   test('no exchange rate block when tecaj is empty', () => {
@@ -374,14 +391,25 @@ describe('generateXml', () => {
 
   test('omits RltdPties block when naziv and racun are both empty', () => {
     const file = makeFile({
-      transactions: [{ ...makeFile().transactions[0], naziv: '', racun: '', bic: '', monthKey: '2026-01' }],
+      transactions: [
+        {
+          ...makeFile().transactions[0],
+          naziv: '',
+          racun: '',
+          bic: '',
+          monthKey: '2026-01',
+        },
+      ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
     expect(xml).not.toContain('<RltdPties>');
   });
 
   test('uses filename (without .csv) as account id', () => {
-    const xml = generateXml([makeFile({ filename: 'SI56123400005678.csv' })], new Set(['2026-01']));
+    const xml = generateXml(
+      [makeFile({ filename: 'SI56123400005678.csv' })],
+      new Set(['2026-01']),
+    );
     expect(xml).toContain('<Othr><Id>SI56123400005678</Id></Othr>');
   });
 
@@ -390,7 +418,14 @@ describe('generateXml', () => {
     const file2 = makeFile({
       filename: 'sek.csv',
       currency: 'SEK',
-      transactions: [{ ...makeFile().transactions[0], valuta: 'SEK', znesek: 5000, monthKey: '2026-01' }],
+      transactions: [
+        {
+          ...makeFile().transactions[0],
+          valuta: 'SEK',
+          znesek: 5000,
+          monthKey: '2026-01',
+        },
+      ],
     });
     const xml = generateXml([file1, file2], new Set(['2026-01']));
     expect(xml).toMatch(/eur/i);
@@ -399,11 +434,13 @@ describe('generateXml', () => {
     expect([...xml.matchAll(/<Stmt>/g)]).toHaveLength(2);
   });
 
-  test('EndToEndId falls back to NOTPROVIDED when referenca is empty', () => {
+  test('omits EndToEndId when referenca is empty', () => {
     const file = makeFile({
-      transactions: [{ ...makeFile().transactions[0], referenca: '', monthKey: '2026-01' }],
+      transactions: [
+        { ...makeFile().transactions[0], referenca: '', monthKey: '2026-01' },
+      ],
     });
     const xml = generateXml([file], new Set(['2026-01']));
-    expect(xml).toContain('<EndToEndId>NOTPROVIDED</EndToEndId>');
+    expect(xml).not.toContain('<EndToEndId>');
   });
 });
