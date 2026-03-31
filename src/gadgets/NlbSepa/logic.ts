@@ -282,7 +282,8 @@ export function generateXml(
 
 export interface Issue {
   level: 'error' | 'warn';
-  message: string;
+  messageId: string;
+  values?: Record<string, string | number>;
 }
 
 export interface MonthSummary {
@@ -322,7 +323,8 @@ export function summarize(files: ParsedFile[], months: Set<string>): Summary {
     if (count > 1)
       issues.push({
         level: 'error',
-        message: `Duplicate transaction ID ${id} appears ${count}×`,
+        messageId: 'nlb.issue.duplicate-id',
+        values: { id, count },
       });
 
   // Missing transaction IDs
@@ -330,7 +332,8 @@ export function summarize(files: ParsedFile[], months: Set<string>): Summary {
   if (missingIds)
     issues.push({
       level: 'warn',
-      message: `${missingIds} transaction(s) have no ID`,
+      messageId: 'nlb.issue.no-id',
+      values: { count: missingIds },
     });
 
   // Zero-amount transactions
@@ -338,7 +341,8 @@ export function summarize(files: ParsedFile[], months: Set<string>): Summary {
   if (zeros)
     issues.push({
       level: 'warn',
-      message: `${zeros} transaction(s) with zero amount`,
+      messageId: 'nlb.issue.zero-amount',
+      values: { count: zeros },
     });
 
   // Charges exceed transaction amount
@@ -348,7 +352,8 @@ export function summarize(files: ParsedFile[], months: Set<string>): Summary {
   if (overcharged)
     issues.push({
       level: 'error',
-      message: `${overcharged} transaction(s) where charges exceed the amount`,
+      messageId: 'nlb.issue.excess-charges',
+      values: { count: overcharged },
     });
 
   // Foreign-currency transactions missing exchange rate
@@ -366,7 +371,8 @@ export function summarize(files: ParsedFile[], months: Set<string>): Summary {
     if (noRate)
       issues.push({
         level: 'warn',
-        message: `${noRate} foreign-currency transaction(s) missing exchange rate`,
+        messageId: 'nlb.issue.missing-rate',
+        values: { count: noRate },
       });
   }
 
@@ -429,7 +435,8 @@ export function checkDoubleAccounting(
   if (badRate.length)
     issues.push({
       level: 'error',
-      message: `${badRate.length} transaction(s) have an invalid exchange rate`,
+      messageId: 'nlb.issue.invalid-rate',
+      values: { count: badRate.length },
     });
 
   // Conversion counterpart pairing: for each transaction with a valid exchange
@@ -464,15 +471,16 @@ export function checkDoubleAccounting(
   if (unmatched > 0)
     issues.push({
       level: 'warn',
-      message: `${unmatched} conversion(s) have no matching counterpart in another currency file`,
+      messageId: 'nlb.issue.no-counterpart',
+      values: { count: unmatched },
     });
 
   return issues;
 }
 
-export function monthLabel(key: string): string {
+export function monthLabel(key: string, locale = 'en'): string {
   const [y, m] = key.split('-');
-  return new Date(Number(y), Number(m) - 1).toLocaleDateString('en', {
+  return new Date(Number(y), Number(m) - 1).toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
   });

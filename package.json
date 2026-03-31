@@ -19,6 +19,7 @@
     "lucide-react": "^1.7.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-intl": "^10.1.1",
     "react-remark": "^2.1.0",
     "remark-gfm": "^1.0.0"
   },

@@ -8,8 +8,10 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { MarkdownView } from '../../components/MarkdownView';
-import infoMd from './INFO.md?raw';
+import infoMdEn from './INFO.md?raw';
+import infoMdSl from './INFO.sl.md?raw';
 import {
   checkDoubleAccounting,
   generateXml,
@@ -29,18 +31,17 @@ function checkXmlConsistency(xml: string, summary: Summary): Issue[] {
   try {
     const doc = new DOMParser().parseFromString(xml, 'application/xml');
     if (doc.querySelector('parseerror'))
-      return [{ level: 'error', message: 'Generated XML failed to parse' }];
+      return [{ level: 'error', messageId: 'nlb.issue.xml-parse-fail' }];
 
     const entries = Array.from(doc.querySelectorAll('Ntry'));
 
-    // Entry count
     if (entries.length !== summary.count)
       issues.push({
         level: 'error',
-        message: `Entry count mismatch: XML has ${entries.length}, CSV has ${summary.count}`,
+        messageId: 'nlb.issue.entry-count-mismatch',
+        values: { xmlCount: entries.length, csvCount: summary.count },
       });
 
-    // Amount totals by currency
     const xmlByCcy = new Map<string, number>();
     for (const e of entries) {
       const el = e.querySelector('Amt');
@@ -58,11 +59,15 @@ function checkXmlConsistency(xml: string, summary: Summary): Issue[] {
       if (Math.abs(xmlAmt - csvAmt) > 0.005)
         issues.push({
           level: 'error',
-          message: `${ccy} total mismatch: XML ${xmlAmt.toFixed(2)} vs CSV ${csvAmt.toFixed(2)}`,
+          messageId: 'nlb.issue.amount-mismatch',
+          values: {
+            ccy,
+            xmlAmt: xmlAmt.toFixed(2),
+            csvAmt: csvAmt.toFixed(2),
+          },
         });
     }
 
-    // Credit/debit split
     let xmlCrdt = 0;
     let xmlDbit = 0;
     doc.querySelectorAll('CdtDbtInd').forEach((el) => {
@@ -78,10 +83,10 @@ function checkXmlConsistency(xml: string, summary: Summary): Issue[] {
     if (xmlCrdt !== csvCrdt || xmlDbit !== csvDbit)
       issues.push({
         level: 'error',
-        message: `Credit/debit split mismatch: XML ${xmlCrdt}↑ ${xmlDbit}↓ vs CSV ${csvCrdt}↑ ${csvDbit}↓`,
+        messageId: 'nlb.issue.cr-dr-mismatch',
+        values: { xmlCrdt, xmlDbit, csvCrdt, csvDbit },
       });
 
-    // Transaction IDs present in XML
     const xmlIds = new Set<string>();
     doc.querySelectorAll('AcctSvcrRef').forEach((el) => {
       if (el.textContent) xmlIds.add(el.textContent);
@@ -92,22 +97,16 @@ function checkXmlConsistency(xml: string, summary: Summary): Issue[] {
     if (missing)
       issues.push({
         level: 'error',
-        message: `${missing} transaction ID(s) from CSV not found in XML`,
+        messageId: 'nlb.issue.missing-ids',
+        values: { count: missing },
       });
   } catch {
     issues.push({
       level: 'error',
-      message: 'XML validation failed unexpectedly',
+      messageId: 'nlb.issue.xml-validate-fail',
     });
   }
   return issues;
-}
-
-function fmtAmt(n: number) {
-  return n.toLocaleString('sl-SI', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 }
 
 function StatCell({
@@ -129,6 +128,8 @@ function StatCell({
 }
 
 function IssueRow({ issue }: { issue: Issue }) {
+  const intl = useIntl();
+  const message = intl.formatMessage({ id: issue.messageId }, issue.values);
   return (
     <div
       className={`flex items-start gap-2 rounded px-3 py-2 text-xs ${
@@ -138,40 +139,38 @@ function IssueRow({ issue }: { issue: Issue }) {
       }`}
     >
       <span>{issue.level === 'error' ? '❌' : '⚠️'}</span>
-      <span>{issue.message}</span>
+      <span>{message}</span>
     </div>
   );
 }
 
-function PassedRow({ label }: { label: string }) {
+function PassedRow({ messageId }: { messageId: string }) {
+  const intl = useIntl();
   return (
     <div className="flex items-center gap-2 rounded px-3 py-2 text-xs bg-green-500/10 border border-green-500/20 text-green-300">
       <span>✓</span>
-      <span>{label}</span>
+      <span>{intl.formatMessage({ id: messageId })}</span>
     </div>
   );
 }
 
 const DATA_CHECKS = [
-  'No duplicate transaction IDs',
-  'All transactions have IDs',
-  'No zero-amount transactions',
-  'No charges exceeding transaction amount',
-  'No foreign-currency transactions missing exchange rate',
+  'nlb.check.no-duplicate-ids',
+  'nlb.check.all-have-ids',
+  'nlb.check.no-zero-amount',
+  'nlb.check.no-excess-charges',
+  'nlb.check.fx-has-rate',
 ];
 
 const XML_CHECKS = [
-  'XML is well-formed',
-  'Entry count matches CSV',
-  'Amount totals match by currency',
-  'Credit/debit split matches',
-  'All transaction IDs present in XML',
+  'nlb.check.xml-wellformed',
+  'nlb.check.entry-count',
+  'nlb.check.amount-totals',
+  'nlb.check.cr-dr-split',
+  'nlb.check.ids-in-xml',
 ];
 
-const DBL_CHECKS = [
-  'All exchange rates are valid',
-  'All conversions have matching counterparts',
-];
+const DBL_CHECKS = ['nlb.check.rates-valid', 'nlb.check.conversions-matched'];
 
 function PreviewPanel({
   summary,
@@ -182,6 +181,13 @@ function PreviewPanel({
   xmlIssues: Issue[];
   dblIssues: Issue[];
 }) {
+  const intl = useIntl();
+  const fmtAmt = (n: number) =>
+    intl.formatNumber(n, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
   const { currencies, issues, transactions } = summary;
   const [tab, setTab] = useState<'checks' | 'transactions'>('checks');
   const [selectedCurrency, setSelectedCurrency] = useState<string | null>(
@@ -223,7 +229,6 @@ function PreviewPanel({
 
   const hasCharges = statsByCcy.some((s) => s.charges > 0);
 
-  // Month breakdown for filtered set
   const byMonth = (() => {
     const map = new Map<
       string,
@@ -265,7 +270,7 @@ function PreviewPanel({
               : 'border-transparent text-white/40 hover:text-white/70'
           }`}
         >
-          Checks
+          {intl.formatMessage({ id: 'nlb.checks' })}
           {totalIssues > 0 && (
             <span className="ml-1.5 text-[10px] bg-red-500/30 text-red-300 rounded-full px-1.5 py-0.5">
               {totalIssues}
@@ -281,7 +286,7 @@ function PreviewPanel({
               : 'border-transparent text-white/40 hover:text-white/70'
           }`}
         >
-          Transactions
+          {intl.formatMessage({ id: 'nlb.transactions' })}
           <span className="ml-1.5 text-[10px] text-white/30">{count}</span>
         </button>
       </div>
@@ -290,7 +295,9 @@ function PreviewPanel({
         {/* Currency filter */}
         {currencies.length > 1 && (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-white/40">Currency:</span>
+            <span className="text-xs text-white/40">
+              {intl.formatMessage({ id: 'nlb.currency-filter' })}
+            </span>
             <button
               type="button"
               onClick={() => setSelectedCurrency(null)}
@@ -300,7 +307,7 @@ function PreviewPanel({
                   : 'text-white/40 hover:text-white/70'
               }`}
             >
-              All
+              {intl.formatMessage({ id: 'nlb.currency-all' })}
             </button>
             {currencies.map((c) => (
               <button
@@ -323,77 +330,85 @@ function PreviewPanel({
         <div className="flex flex-col gap-2 border border-white/10 rounded-lg px-4 py-3">
           {statsByCcy.map(({ ccy, credits, debits, net, charges }) => (
             <div key={ccy} className="flex flex-wrap gap-x-6 gap-y-2">
-              <StatCell label="Credits" value={`+${fmtAmt(credits)} ${ccy}`} />
-              <StatCell label="Debits" value={`-${fmtAmt(debits)} ${ccy}`} />
               <StatCell
-                label="Net"
+                label={intl.formatMessage({ id: 'nlb.credits' })}
+                value={`+${fmtAmt(credits)} ${ccy}`}
+              />
+              <StatCell
+                label={intl.formatMessage({ id: 'nlb.debits' })}
+                value={`-${fmtAmt(debits)} ${ccy}`}
+              />
+              <StatCell
+                label={intl.formatMessage({ id: 'nlb.net' })}
                 value={`${net >= 0 ? '+' : ''}${fmtAmt(net)} ${ccy}`}
               />
               {charges > 0 && (
-                <StatCell label="Charges" value={`${fmtAmt(charges)} ${ccy}`} />
+                <StatCell
+                  label={intl.formatMessage({ id: 'nlb.charges' })}
+                  value={`${fmtAmt(charges)} ${ccy}`}
+                />
               )}
             </div>
           ))}
           <StatCell
-            label="Transactions"
+            label={intl.formatMessage({ id: 'nlb.txns-label' })}
             value={String(count)}
-            sub={pendingCount > 0 ? `${pendingCount} pending` : undefined}
+            sub={
+              pendingCount > 0
+                ? intl.formatMessage(
+                    { id: 'nlb.pending' },
+                    { count: pendingCount },
+                  )
+                : undefined
+            }
           />
         </div>
 
         {tab === 'checks' && (
           <>
-            {/* CSV data issues */}
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-white/50 font-medium">
-                Data checks
+                {intl.formatMessage({ id: 'nlb.data-checks' })}
               </span>
               {issues.length > 0
                 ? issues.map((issue) => (
-                    <IssueRow key={issue.message} issue={issue} />
+                    <IssueRow key={issue.messageId} issue={issue} />
                   ))
-                : DATA_CHECKS.map((label) => (
-                    <PassedRow key={label} label={label} />
+                : DATA_CHECKS.map((id) => (
+                    <PassedRow key={id} messageId={id} />
                   ))}
             </div>
 
-            {/* XML consistency issues */}
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-white/50 font-medium">
-                XML consistency
+                {intl.formatMessage({ id: 'nlb.xml-consistency' })}
               </span>
               {xmlIssues.length > 0
                 ? xmlIssues.map((issue) => (
-                    <IssueRow key={issue.message} issue={issue} />
+                    <IssueRow key={issue.messageId} issue={issue} />
                   ))
-                : XML_CHECKS.map((label) => (
-                    <PassedRow key={label} label={label} />
-                  ))}
+                : XML_CHECKS.map((id) => <PassedRow key={id} messageId={id} />)}
             </div>
 
-            {/* Double accounting issues */}
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-white/50 font-medium">
-                Double accounting
+                {intl.formatMessage({ id: 'nlb.double-accounting' })}
               </span>
               {dblIssues.length > 0
                 ? dblIssues.map((issue) => (
-                    <IssueRow key={issue.message} issue={issue} />
+                    <IssueRow key={issue.messageId} issue={issue} />
                   ))
-                : DBL_CHECKS.map((label) => (
-                    <PassedRow key={label} label={label} />
-                  ))}
+                : DBL_CHECKS.map((id) => <PassedRow key={id} messageId={id} />)}
             </div>
           </>
         )}
 
         {tab === 'transactions' && (
           <>
-            {/* Per-month breakdown */}
             {byMonth.length > 1 && (
               <div className="flex flex-col gap-1.5">
                 <span className="text-xs text-white/50 font-medium">
-                  By month
+                  {intl.formatMessage({ id: 'nlb.by-month' })}
                 </span>
                 <div className="grid gap-1">
                   {byMonth.map((m) => (
@@ -402,7 +417,7 @@ function PreviewPanel({
                       className="flex items-center gap-3 text-xs px-3 py-1.5 rounded bg-white/5"
                     >
                       <span className="text-white/60 w-20 shrink-0">
-                        {monthLabel(m.key)}
+                        {monthLabel(m.key, intl.locale)}
                       </span>
                       <span className="text-green-400 font-mono w-24 text-right">
                         +{fmtAmt(m.credits)}
@@ -414,11 +429,15 @@ function PreviewPanel({
                       </span>
                       {hasCharges && (
                         <span className="text-white/40 font-mono w-20 text-right">
-                          {fmtAmt(m.charges)} fees
+                          {fmtAmt(m.charges)}{' '}
+                          {intl.formatMessage({ id: 'nlb.fees' })}
                         </span>
                       )}
                       <span className="text-white/30 ml-auto">
-                        {m.count} txns
+                        {intl.formatMessage(
+                          { id: 'nlb.txns-count' },
+                          { count: m.count },
+                        )}
                       </span>
                     </div>
                   ))}
@@ -426,10 +445,9 @@ function PreviewPanel({
               </div>
             )}
 
-            {/* Transaction list */}
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-white/50 font-medium">
-                Transactions
+                {intl.formatMessage({ id: 'nlb.transactions' })}
               </span>
               <div className="flex flex-col gap-0.5">
                 {sorted.map((t, i) => (
@@ -455,7 +473,8 @@ function PreviewPanel({
                     )}
                     {t.stroski > 0 && (
                       <span className="text-white/30 font-mono shrink-0 whitespace-nowrap">
-                        +{fmtAmt(t.stroski)} fees
+                        +{fmtAmt(t.stroski)}{' '}
+                        {intl.formatMessage({ id: 'nlb.fees' })}
                       </span>
                     )}
                     <span
@@ -468,7 +487,9 @@ function PreviewPanel({
                       <span className="text-white/30">{t.valuta}</span>
                     </span>
                     {t.status === 'AVTORIZACIJA' && (
-                      <span className="text-yellow-400/70 shrink-0">PDNG</span>
+                      <span className="text-yellow-400/70 shrink-0">
+                        {intl.formatMessage({ id: 'nlb.pending-status' })}
+                      </span>
                     )}
                   </div>
                 ))}
@@ -482,6 +503,9 @@ function PreviewPanel({
 }
 
 export const NlbSepa = () => {
+  const intl = useIntl();
+  const infoMd = intl.locale === 'sl' ? infoMdSl : infoMdEn;
+
   const [files, setFiles] = useState<ParsedFile[]>([]);
   const [selectedMonths, setSelectedMonths] = useState<Set<string>>(new Set());
   const [dragging, setDragging] = useState(false);
@@ -614,10 +638,12 @@ export const NlbSepa = () => {
       <div className="flex flex-col gap-3 w-64 shrink-0">
         {/* Account info */}
         <div className="flex flex-col gap-2 border border-white/10 rounded-lg px-3 py-2.5">
-          <span className="text-xs text-white/50 font-medium">Account</span>
+          <span className="text-xs text-white/50 font-medium">
+            {intl.formatMessage({ id: 'nlb.account' })}
+          </span>
           <input
             type="text"
-            placeholder="IBAN (e.g. SI56…)"
+            placeholder={intl.formatMessage({ id: 'nlb.iban-placeholder' })}
             value={accountIban}
             onChange={(e) => {
               setAccountIban(e.target.value);
@@ -628,7 +654,7 @@ export const NlbSepa = () => {
           <div className="flex flex-col gap-0.5">
             <input
               type="text"
-              placeholder="Owner name (optional)"
+              placeholder={intl.formatMessage({ id: 'nlb.owner-placeholder' })}
               value={accountOwner}
               onChange={(e) => {
                 setAccountOwner(e.target.value);
@@ -636,7 +662,9 @@ export const NlbSepa = () => {
               }}
               className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder-white/25 focus:outline-none focus:border-white/30 w-full"
             />
-            <span className="text-xs text-white/30">Use ALL CAPS</span>
+            <span className="text-xs text-white/30">
+              {intl.formatMessage({ id: 'nlb.owner-hint' })}
+            </span>
           </div>
         </div>
 
@@ -666,16 +694,15 @@ export const NlbSepa = () => {
         >
           <Upload size={20} className="text-white/50" />
           <span className="text-xs text-white/50 text-center">
-            Drop CSV files
+            {intl.formatMessage({ id: 'nlb.drop-title' })}
             <br />
-            or click to browse
+            {intl.formatMessage({ id: 'nlb.drop-subtitle' })}
           </span>
         </button>
 
         {/* Multi-currency hint */}
         <p className="text-xs text-white/30 leading-relaxed">
-          If your account has multiple currencies, import all CSV exports for
-          accurate checks.
+          {intl.formatMessage({ id: 'nlb.multicurrency-hint' })}
         </p>
 
         {/* Loaded files */}
@@ -695,7 +722,11 @@ export const NlbSepa = () => {
                     {f.filename}
                   </span>
                   <span className="text-xs text-white/30">
-                    {f.currency} · {f.transactions.length} txns
+                    {f.currency} ·{' '}
+                    {intl.formatMessage(
+                      { id: 'nlb.txns-count' },
+                      { count: f.transactions.length },
+                    )}
                   </span>
                 </div>
                 <button
@@ -714,20 +745,22 @@ export const NlbSepa = () => {
         {allMonths.length > 0 && (
           <div className="flex flex-col gap-1.5 flex-1 min-h-0">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-white/50 font-medium">Months</span>
+              <span className="text-xs text-white/50 font-medium">
+                {intl.formatMessage({ id: 'nlb.months' })}
+              </span>
               <button
                 type="button"
                 onClick={selectAll}
                 className="text-xs text-blue-400 hover:text-blue-300"
               >
-                All
+                {intl.formatMessage({ id: 'nlb.all' })}
               </button>
               <button
                 type="button"
                 onClick={selectNone}
                 className="text-xs text-white/40 hover:text-white/60"
               >
-                None
+                {intl.formatMessage({ id: 'nlb.none' })}
               </button>
             </div>
             <div className="flex flex-col gap-1 overflow-y-auto">
@@ -738,7 +771,7 @@ export const NlbSepa = () => {
                   onClick={() => toggleMonth(key)}
                   className={`text-xs px-3 py-1.5 rounded border text-left transition-colors ${selectedMonths.has(key) ? 'bg-blue-500/30 border-blue-400 text-blue-200' : 'border-white/15 text-white/50 hover:border-white/30'}`}
                 >
-                  {monthLabel(key)}
+                  {monthLabel(key, intl.locale)}
                 </button>
               ))}
             </div>
@@ -755,11 +788,11 @@ export const NlbSepa = () => {
           <div className="flex flex-col items-center justify-center h-full text-white/30">
             {files.length === 0 ? (
               <span className="text-sm">
-                Upload NLB CSV export(s) to get started
+                {intl.formatMessage({ id: 'nlb.upload-prompt' })}
               </span>
             ) : (
               <span className="text-sm">
-                Select one or more months to preview the ISO 20022 XML
+                {intl.formatMessage({ id: 'nlb.months-prompt' })}
               </span>
             )}
           </div>
@@ -791,7 +824,7 @@ export const NlbSepa = () => {
           <button
             type="button"
             onClick={() => setShowInfo((v) => !v)}
-            title="About this gadget"
+            title={intl.formatMessage({ id: 'nlb.about' })}
             className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${showInfo ? 'bg-white/20 text-white' : 'hover:bg-white/15 text-white/60 hover:text-white'}`}
           >
             <HelpCircle size={15} />
@@ -800,7 +833,7 @@ export const NlbSepa = () => {
             type="button"
             onClick={() => setShowPreview((v) => !v)}
             disabled={!summary || showInfo}
-            title="Preview"
+            title={intl.formatMessage({ id: 'nlb.preview' })}
             className="relative flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <Eye size={15} className="text-white" />
@@ -814,7 +847,7 @@ export const NlbSepa = () => {
             type="button"
             onClick={download}
             disabled={!xml}
-            title="Download XML"
+            title={intl.formatMessage({ id: 'nlb.download' })}
             className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <Download size={15} className="text-white" />
