@@ -170,6 +170,14 @@ describe('parseFile', () => {
     expect(currency).toBe('SEK');
   });
 
+  test('parses Dodatni stroški into stroski', () => {
+    const csv = makeCsv(
+      'KONVERZIJA,Prenosi,-,140000.00,SEK,26. 3. 2026,JOHN DOE,STREET 1,SI56020102818000000,,,10.9100,,26. 3. 2026,2.50,8847807250',
+    );
+    const { transactions } = parseFile('sek.csv', csv);
+    expect(transactions[0].stroski).toBe(2.5);
+  });
+
   test('sets filename on ParsedFile', () => {
     const csv = makeCsv(
       'PROVIZIJA,Finance,-,0.40,EUR,1. 1. 2026,,,,,,,,1. 1. 2026,,1234567890',
@@ -234,6 +242,7 @@ function makeFile(overrides: Partial<ParsedFile> = {}): ParsedFile {
         tecaj: '',
         referenca: 'SI00123456',
         datumPoravnave: '2026-01-05',
+        stroski: 0,
         idTransakcije: '1000000001',
         monthKey: '2026-01',
       },
@@ -387,6 +396,23 @@ describe('generateXml', () => {
   test('no exchange rate block when tecaj is empty', () => {
     const xml = generateXml([makeFile()], new Set(['2026-01']));
     expect(xml).not.toContain('<AmtDtls>');
+  });
+
+  test('emits TtlChrgsAndTaxAmt when stroski > 0', () => {
+    const file = makeFile({
+      transactions: [
+        { ...makeFile().transactions[0], stroski: 2.5, monthKey: '2026-01' },
+      ],
+    });
+    const xml = generateXml([file], new Set(['2026-01']));
+    expect(xml).toContain(
+      '<TtlChrgsAndTaxAmt Ccy="EUR">2.50</TtlChrgsAndTaxAmt>',
+    );
+  });
+
+  test('omits TtlChrgsAndTaxAmt when stroski is 0', () => {
+    const xml = generateXml([makeFile()], new Set(['2026-01']));
+    expect(xml).not.toContain('<TtlChrgsAndTaxAmt>');
   });
 
   test('omits RltdPties block when naziv and racun are both empty', () => {

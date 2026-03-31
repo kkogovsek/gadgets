@@ -13,6 +13,7 @@ export interface Transaction {
   tecaj: string;
   referenca: string;
   datumPoravnave: string;
+  stroski: number;
   idTransakcije: string;
   monthKey: string;
 }
@@ -107,6 +108,7 @@ export function parseFile(filename: string, content: string): ParsedFile {
   const iTecaj = col('Menjalni tečaj');
   const iRef = col('Referenca prejemnika');
   const iDatPor = col('Datum poravnave');
+  const iStroski = col('Dodatni stroški');
   const iId = col('ID transakcije');
 
   const get = (r: string[], i: number) => (i >= 0 ? (r[i] ?? '') : '').trim();
@@ -136,6 +138,7 @@ export function parseFile(filename: string, content: string): ParsedFile {
       tecaj: get(r, iTecaj),
       referenca: get(r, iRef),
       datumPoravnave,
+      stroski: Math.abs(parseFloat(get(r, iStroski).replace(',', '.')) || 0),
       idTransakcije: get(r, iId),
       monthKey: datumPlacila.substring(0, 7),
     });
@@ -220,6 +223,7 @@ export function generateXml(
         <Sts>${bookStatus}</Sts>
         ${t.datumPlacila ? `<BookgDt><Dt>${t.datumPlacila}</Dt></BookgDt>` : ''}
         ${valDt ? `<ValDt><Dt>${valDt}</Dt></ValDt>` : ''}
+        ${t.stroski > 0 ? `<TtlChrgsAndTaxAmt Ccy="${esc(t.valuta)}">${t.stroski.toFixed(2)}</TtlChrgsAndTaxAmt>` : ''}
         <BkTxCd>
           <Domn>
             <Cd>PMNT</Cd>
@@ -274,6 +278,196 @@ export function generateXml(
     </GrpHdr>${stmtBlocks}
   </BkToCstmrStmt>
 </Document>`;
+}
+
+export interface Issue {
+  level: 'error' | 'warn';
+  message: string;
+}
+
+export interface MonthSummary {
+  key: string;
+  credits: number;
+  debits: number;
+  charges: number;
+  count: number;
+}
+
+export interface Summary {
+  credits: number;
+  debits: number;
+  charges: number;
+  count: number;
+  pendingCount: number;
+  currencies: string[];
+  byMonth: MonthSummary[];
+  issues: Issue[];
+  transactions: Transaction[];
+}
+
+export function summarize(files: ParsedFile[], months: Set<string>): Summary {
+  const transactions = files.flatMap((f) =>
+    f.transactions.filter((t) => months.has(t.monthKey)),
+  );
+
+  const issues: Issue[] = [];
+
+  // Duplicate transaction IDs
+  const idCount = new Map<string, number>();
+  for (const t of transactions) {
+    if (t.idTransakcije)
+      idCount.set(t.idTransakcije, (idCount.get(t.idTransakcije) ?? 0) + 1);
+  }
+  for (const [id, count] of idCount)
+    if (count > 1)
+      issues.push({
+        level: 'error',
+        message: `Duplicate transaction ID ${id} appears ${count}×`,
+      });
+
+  // Missing transaction IDs
+  const missingIds = transactions.filter((t) => !t.idTransakcije).length;
+  if (missingIds)
+    issues.push({
+      level: 'warn',
+      message: `${missingIds} transaction(s) have no ID`,
+    });
+
+  // Zero-amount transactions
+  const zeros = transactions.filter((t) => t.znesek === 0).length;
+  if (zeros)
+    issues.push({
+      level: 'warn',
+      message: `${zeros} transaction(s) with zero amount`,
+    });
+
+  // Charges exceed transaction amount
+  const overcharged = transactions.filter(
+    (t) => t.stroski > 0 && t.stroski > t.znesek,
+  ).length;
+  if (overcharged)
+    issues.push({
+      level: 'error',
+      message: `${overcharged} transaction(s) where charges exceed the amount`,
+    });
+
+  // Foreign-currency transactions missing exchange rate
+  const currencyFreq = new Map<string, number>();
+  for (const t of transactions)
+    currencyFreq.set(t.valuta, (currencyFreq.get(t.valuta) ?? 0) + 1);
+  const currencies = [...currencyFreq.keys()];
+  if (currencies.length > 1) {
+    const base = ([...currencyFreq.entries()].sort(
+      (a, b) => b[1] - a[1],
+    )[0] ?? ['EUR'])[0];
+    const noRate = transactions.filter(
+      (t) => t.valuta !== base && !t.tecaj && t.direction === '-',
+    ).length;
+    if (noRate)
+      issues.push({
+        level: 'warn',
+        message: `${noRate} foreign-currency transaction(s) missing exchange rate`,
+      });
+  }
+
+  // Totals
+  let credits = 0;
+  let debits = 0;
+  let charges = 0;
+  let pendingCount = 0;
+  const monthMap = new Map<string, MonthSummary>();
+
+  for (const t of transactions) {
+    if (t.direction === '+') credits += t.znesek;
+    else debits += t.znesek;
+    charges += t.stroski;
+    if (t.status === 'AVTORIZACIJA') pendingCount++;
+
+    let m = monthMap.get(t.monthKey);
+    if (!m) {
+      m = { key: t.monthKey, credits: 0, debits: 0, charges: 0, count: 0 };
+      monthMap.set(t.monthKey, m);
+    }
+    if (t.direction === '+') m.credits += t.znesek;
+    else m.debits += t.znesek;
+    m.charges += t.stroski;
+    m.count++;
+  }
+
+  const byMonth = [...monthMap.values()].sort((a, b) =>
+    b.key.localeCompare(a.key),
+  );
+
+  return {
+    credits,
+    debits,
+    charges,
+    count: transactions.length,
+    pendingCount,
+    currencies,
+    byMonth,
+    issues,
+    transactions,
+  };
+}
+
+export function checkDoubleAccounting(
+  files: ParsedFile[],
+  months: Set<string>,
+): Issue[] {
+  const issues: Issue[] = [];
+  const allTxns = files.flatMap((f) =>
+    f.transactions.filter((t) => months.has(t.monthKey)),
+  );
+
+  // Validate exchange rates
+  const badRate = allTxns.filter((t) => {
+    if (!t.tecaj) return false;
+    const r = parseFloat(t.tecaj);
+    return Number.isNaN(r) || r <= 0;
+  });
+  if (badRate.length)
+    issues.push({
+      level: 'error',
+      message: `${badRate.length} transaction(s) have an invalid exchange rate`,
+    });
+
+  // Conversion counterpart pairing: for each transaction with a valid exchange
+  // rate, there should be a matching transaction in another currency on the same
+  // date (±3 days) with the opposite direction and approximately matching
+  // converted amount (within 2%).
+  const conversions = allTxns.filter((t) => {
+    if (!t.tecaj) return false;
+    const r = parseFloat(t.tecaj);
+    return !Number.isNaN(r) && r > 0;
+  });
+
+  let unmatched = 0;
+  for (const t of conversions) {
+    const rate = parseFloat(t.tecaj);
+    const convertedAmt = t.znesek / rate;
+    const oppositeDir = t.direction === '-' ? '+' : '-';
+
+    const found = allTxns.some((c) => {
+      if (c === t || c.valuta === t.valuta) return false;
+      if (c.direction !== oppositeDir) return false;
+      const dt = Math.abs(
+        new Date(c.datumPlacila).getTime() - new Date(t.datumPlacila).getTime(),
+      );
+      if (dt > 3 * 24 * 3600 * 1000) return false;
+      return Math.abs(c.znesek - convertedAmt) / convertedAmt < 0.02;
+    });
+
+    if (!found) unmatched++;
+  }
+
+  if (unmatched > 0)
+    issues.push({
+      level: 'warn',
+      message: `${unmatched} conversion(s) have no matching counterpart in another currency file`,
+    });
+
+  return issues;
 }
 
 export function monthLabel(key: string): string {

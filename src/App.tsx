@@ -1,23 +1,23 @@
 import { Suspense, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { gadgets } from './gadgets';
-import { PrivacyPolicy } from './gadgets/PrivacyPolicy';
+import { useRoute } from './router';
 import './App.css';
 
 const App = () => {
-  const [activeId, setActiveId] = useState(gadgets[0].id);
+  const { path, navigate } = useRoute();
   const [minimal, setMinimal] = useState(false);
 
-  const activeGadget = gadgets.find((g) => g.id === activeId);
-  const GadgetComponent =
-    activeId === 'privacy-policy' ? PrivacyPolicy : activeGadget?.component;
+  const gadgetId = path === '/' ? gadgets[0].id : path.slice(1);
+  const activeGadget = gadgets.find((g) => g.id === gadgetId) ?? gadgets[0];
+  const GadgetComponent = activeGadget.component;
 
   return (
     <div className="flex h-screen p-4 gap-4">
       <Sidebar
         gadgets={gadgets}
-        activeId={activeId}
-        onSelect={setActiveId}
+        activeId={activeGadget.id}
+        onSelect={(id) => navigate(`/${id}`)}
         minimal={minimal}
         onToggleMinimal={() => setMinimal((m) => !m)}
       />
