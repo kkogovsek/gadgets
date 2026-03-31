@@ -2,7 +2,7 @@
 
 A collection of small, focused utility tools in a clean sidebar-driven UI. No accounts, no tracking — just tools that do one thing well.
 
-**Live at:** http://gadgets.autonomiam.studio/
+**Live at:** [gadgets.autonomiam.studio](https://gadgets.autonomiam.studio/)
 
 ## Available gadgets
 
@@ -54,14 +54,14 @@ export const YourGadget = () => {
 2. Register it in `src/gadgets/index.ts`:
 
 ```ts
-import { Wrench } from 'lucide-react';
-import { YourGadget } from './YourGadget';
+import { Wrench } from "lucide-react";
+import { YourGadget } from "./YourGadget";
 
 export const gadgets: Gadget[] = [
   // ...existing gadgets
   {
-    id: 'your-gadget',
-    name: 'Your Gadget',
+    id: "your-gadget",
+    name: "Your Gadget",
     icon: Wrench,
     component: YourGadget,
   },
