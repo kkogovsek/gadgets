@@ -18,7 +18,11 @@ You can clear it at any time through your browser's developer tools or by cleari
 
 ## No tracking
 
-Gadgets does not use analytics, cookies, tracking pixels, or any third-party scripts that could collect information about you or your usage.
+Gadgets itself does not use analytics, cookies, tracking pixels, or any third-party scripts that could collect information about you or your usage.
+
+## Hosting infrastructure
+
+This site is hosted on [Cloudflare](https://www.cloudflare.com). As the infrastructure provider, Cloudflare processes standard HTTP request metadata (such as IP addresses, user agents, request URLs, and timestamps) in order to serve the site and protect against abuse. This data is handled according to [Cloudflare's privacy policy](https://www.cloudflare.com/privacypolicy/) and is outside the control of this application.
 
 ## Files
 
