@@ -1,7 +1,9 @@
 import { useRemarkSync } from 'react-remark';
+import remarkGfm from 'remark-gfm';
 
 export const MarkdownView = ({ content }: { content: string }) => {
   const rendered = useRemarkSync(content, {
+    remarkPlugins: [remarkGfm],
     rehypeReactOptions: {
       components: {
         h1: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => (

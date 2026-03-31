@@ -194,19 +194,34 @@ function PreviewPanel({
     ? transactions.filter((t) => t.valuta === selectedCurrency)
     : transactions;
 
-  const credits = filtered
-    .filter((t) => t.direction === '+')
-    .reduce((s, t) => s + t.znesek, 0);
-  const debits = filtered
-    .filter((t) => t.direction === '-')
-    .reduce((s, t) => s + t.znesek, 0);
-  const charges = filtered.reduce((s, t) => s + t.stroski, 0);
-  const net = credits - debits;
   const count = filtered.length;
   const pendingCount = filtered.filter(
     (t) => t.status === 'AVTORIZACIJA',
   ).length;
-  const hasCharges = charges > 0;
+
+  const statsByCcy = (() => {
+    const map = new Map<
+      string,
+      { credits: number; debits: number; charges: number }
+    >();
+    for (const t of filtered) {
+      let s = map.get(t.valuta);
+      if (!s) {
+        s = { credits: 0, debits: 0, charges: 0 };
+        map.set(t.valuta, s);
+      }
+      if (t.direction === '+') s.credits += t.znesek;
+      else s.debits += t.znesek;
+      s.charges += t.stroski;
+    }
+    return [...map.entries()].map(([ccy, v]) => ({
+      ccy,
+      ...v,
+      net: v.credits - v.debits,
+    }));
+  })();
+
+  const hasCharges = statsByCcy.some((s) => s.charges > 0);
 
   // Month breakdown for filtered set
   const byMonth = (() => {
@@ -230,7 +245,9 @@ function PreviewPanel({
       .map(([key, v]) => ({ key, ...v }));
   })();
 
-  const ccy = selectedCurrency ? ` ${selectedCurrency}` : '';
+  const filteredCurrencies = [...new Set(filtered.map((t) => t.valuta))];
+  const ccy =
+    filteredCurrencies.length === 1 ? ` ${filteredCurrencies[0]}` : '';
   const sorted = filtered
     .slice()
     .sort((a, b) => b.datumPlacila.localeCompare(a.datumPlacila));
@@ -303,16 +320,20 @@ function PreviewPanel({
         )}
 
         {/* Summary stats */}
-        <div className="flex flex-wrap gap-x-6 gap-y-3 border border-white/10 rounded-lg px-4 py-3">
-          <StatCell label="Credits" value={`+${fmtAmt(credits)}${ccy}`} />
-          <StatCell label="Debits" value={`-${fmtAmt(debits)}${ccy}`} />
-          <StatCell
-            label="Net"
-            value={`${net >= 0 ? '+' : ''}${fmtAmt(net)}${ccy}`}
-          />
-          {hasCharges && (
-            <StatCell label="Charges" value={`${fmtAmt(charges)}${ccy}`} />
-          )}
+        <div className="flex flex-col gap-2 border border-white/10 rounded-lg px-4 py-3">
+          {statsByCcy.map(({ ccy, credits, debits, net, charges }) => (
+            <div key={ccy} className="flex flex-wrap gap-x-6 gap-y-2">
+              <StatCell label="Credits" value={`+${fmtAmt(credits)} ${ccy}`} />
+              <StatCell label="Debits" value={`-${fmtAmt(debits)} ${ccy}`} />
+              <StatCell
+                label="Net"
+                value={`${net >= 0 ? '+' : ''}${fmtAmt(net)} ${ccy}`}
+              />
+              {charges > 0 && (
+                <StatCell label="Charges" value={`${fmtAmt(charges)} ${ccy}`} />
+              )}
+            </div>
+          ))}
           <StatCell
             label="Transactions"
             value={String(count)}
@@ -385,9 +406,11 @@ function PreviewPanel({
                       </span>
                       <span className="text-green-400 font-mono w-24 text-right">
                         +{fmtAmt(m.credits)}
+                        {ccy}
                       </span>
                       <span className="text-red-400 font-mono w-24 text-right">
                         -{fmtAmt(m.debits)}
+                        {ccy}
                       </span>
                       {hasCharges && (
                         <span className="text-white/40 font-mono w-20 text-right">
@@ -469,7 +492,7 @@ export const NlbSepa = () => {
     () => localStorage.getItem(LS_OWNER) ?? '',
   );
   const [showPreview, setShowPreview] = useState(true);
-  const [showInfo, setShowInfo] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
 
   const allMonths = useMemo(() => {
     const s = new Set<string>();
@@ -526,6 +549,7 @@ export const NlbSepa = () => {
         const existing = new Set(prev.map((f) => f.filename));
         return [...prev, ...parsed.filter((p) => !existing.has(p.filename))];
       });
+      setShowInfo(false);
     });
   }, []);
 
@@ -647,6 +671,12 @@ export const NlbSepa = () => {
             or click to browse
           </span>
         </button>
+
+        {/* Multi-currency hint */}
+        <p className="text-xs text-white/30 leading-relaxed">
+          If your account has multiple currencies, import all CSV exports for
+          accurate checks.
+        </p>
 
         {/* Loaded files */}
         {files.length > 0 && (
