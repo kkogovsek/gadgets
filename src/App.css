@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
 @import "tailwindcss";
 
 /* ── Theme tokens (default: dark space) ───────────────────── */
@@ -8,6 +9,12 @@
   --nav-inactive-color: rgba(255, 255, 255, 0.5);
   --nav-hover-bg: rgba(255, 255, 255, 0.08);
   --nav-hover-color: rgba(255, 255, 255, 0.9);
+
+  /* Semantic palette — override per theme */
+  --color-primary: #6366f1; /* links, tab underline, focus accents */
+  --color-success: #4ade80; /* confirmations, passing checks */
+  --color-warning: #facc15; /* cautions, pending states */
+  --color-danger: #f87171; /* errors, destructive actions */
 }
 
 body {
@@ -42,6 +49,11 @@ body.theme-nlb {
   --nav-inactive-color: #000000;
   --nav-hover-bg: #c0bcb4;
   --nav-hover-color: #000080;
+
+  --color-primary: #000080;
+  --color-success: #006600;
+  --color-warning: #806600;
+  --color-danger: #cc0000;
 }
 
 /* Sidebar — raised 3-D panel */
@@ -83,20 +95,6 @@ body.theme-nlb .text-white {
 }
 body.theme-nlb [class*="text-white/"] {
   color: rgba(0, 0, 0, 0.6);
-}
-
-/* Blue links stay readable */
-body.theme-nlb .text-blue-400,
-body.theme-nlb .text-blue-300 {
-  color: #000080;
-}
-body.theme-nlb .text-indigo-400 {
-  color: #000080;
-}
-
-/* Accents: indigo → navy */
-body.theme-nlb .text-indigo-500 {
-  color: #000080;
 }
 
 /* ── Backgrounds: white/opacity → classic gray ── */
@@ -150,16 +148,16 @@ body.theme-nlb [class*="bg-indigo-"] {
 /* ── Semantic colors — readable on light Win95 background ── */
 body.theme-nlb .text-green-400,
 body.theme-nlb .text-green-300 {
-  color: #006600;
+  color: var(--color-success);
 }
 
 body.theme-nlb .text-red-400,
 body.theme-nlb .text-red-300 {
-  color: #cc0000;
+  color: var(--color-danger);
 }
 
 body.theme-nlb [class*="text-yellow-"] {
-  color: #806600;
+  color: var(--color-warning);
 }
 
 body.theme-nlb [class*="bg-red-"] {
@@ -221,6 +219,11 @@ body.theme-mac {
   --nav-inactive-color: #000000;
   --nav-hover-bg: #dddddd;
   --nav-hover-color: #000000;
+
+  --color-primary: #000000;
+  --color-success: #006600;
+  --color-warning: #806600;
+  --color-danger: #cc0000;
 }
 
 /* Sidebar — Mac tool palette window */
@@ -255,13 +258,6 @@ body.theme-mac .text-white {
 body.theme-mac [class*="text-white/"] {
   color: rgba(0, 0, 0, 0.55);
 }
-body.theme-mac .text-blue-400,
-body.theme-mac .text-blue-300,
-body.theme-mac .text-indigo-400,
-body.theme-mac .text-indigo-500 {
-  color: #000000;
-}
-
 /* Backgrounds: dark/opacity → light gray */
 body.theme-mac [class*="bg-white/"] {
   background-color: #eeeeee;
@@ -320,16 +316,16 @@ body.theme-mac [class*="bg-["] {
 /* ── Semantic colors — readable on white Mac background ── */
 body.theme-mac .text-green-400,
 body.theme-mac .text-green-300 {
-  color: #006600;
+  color: var(--color-success);
 }
 
 body.theme-mac .text-red-400,
 body.theme-mac .text-red-300 {
-  color: #cc0000;
+  color: var(--color-danger);
 }
 
 body.theme-mac [class*="text-yellow-"] {
-  color: #806600;
+  color: var(--color-warning);
 }
 
 body.theme-mac [class*="bg-red-"] {
@@ -388,6 +384,8 @@ body.theme-opera {
   --nav-inactive-color: rgba(232, 232, 232, 0.55);
   --nav-hover-bg: rgba(255, 27, 45, 0.12);
   --nav-hover-color: #ff1b2d;
+
+  --color-primary: #ff1b2d;
 }
 
 body.theme-opera .sidebar-root {
@@ -411,13 +409,6 @@ body.theme-opera .text-white {
 body.theme-opera [class*="text-white/"] {
   color: rgba(232, 232, 232, 0.5);
 }
-body.theme-opera .text-blue-400,
-body.theme-opera .text-blue-300,
-body.theme-opera .text-indigo-400,
-body.theme-opera .text-indigo-500 {
-  color: #ff1b2d;
-}
-
 /* Backgrounds */
 body.theme-opera [class*="bg-white/"] {
   background-color: rgba(255, 255, 255, 0.07);
@@ -616,6 +607,8 @@ body.theme-legal {
   --nav-inactive-color: rgba(28, 26, 20, 0.6);
   --nav-hover-bg: rgba(68, 55, 42, 0.1);
   --nav-hover-color: #44372a;
+
+  --color-primary: #44372a;
 }
 
 body.theme-legal .sidebar-root {
@@ -653,6 +646,333 @@ body.theme-legal ::-webkit-scrollbar-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   Math Theme  —  LaTeX / academic paper document
+   ═══════════════════════════════════════════════════════════ */
+body.theme-math {
+  background-image: none;
+  background-color: #e8e4d9;
+  color: #1a1a1a;
+  font-family: Georgia, "Times New Roman", Times, serif;
+
+  --nav-active-bg: #1a1a1a;
+  --nav-active-color: #f8f5ee;
+  --nav-inactive-color: rgba(26, 26, 26, 0.5);
+  --nav-hover-bg: rgba(26, 26, 26, 0.08);
+  --nav-hover-color: #1a1a1a;
+
+  --color-primary: #1a1a1a;
+  --color-success: #005a00;
+  --color-warning: #8b6914;
+  --color-danger: #8b0000;
+}
+
+body.theme-math .sidebar-root {
+  background: #ddd9ce;
+  border-color: rgba(26, 26, 26, 0.18);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.theme-math .main-panel {
+  background: #fdfcf9;
+  border-color: rgba(26, 26, 26, 0.12);
+  border-radius: 0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+body.theme-math .text-white {
+  color: #1a1a1a;
+}
+body.theme-math [class*="text-white/"] {
+  color: rgba(26, 26, 26, 0.5);
+}
+body.theme-math [class*="bg-white/"] {
+  background-color: rgba(26, 26, 26, 0.05);
+}
+body.theme-math [class*="border-white/"] {
+  border-color: rgba(26, 26, 26, 0.18);
+}
+
+body.theme-math button,
+body.theme-math input,
+body.theme-math [class*="rounded"] {
+  border-radius: 0;
+}
+
+body.theme-math input[type="text"],
+body.theme-math input:not([type]) {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.28);
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+/* Primary buttons — dark ink */
+body.theme-math .bg-indigo-500,
+body.theme-math .bg-blue-600 {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+}
+body.theme-math .bg-indigo-500:hover,
+body.theme-math .hover\:bg-indigo-400:hover,
+body.theme-math .bg-blue-600:hover,
+body.theme-math .hover\:bg-blue-500:hover {
+  background: #333333;
+}
+body.theme-math .bg-indigo-500.text-white,
+body.theme-math [class*="bg-indigo-"] {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+body.theme-math ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.theme-math ::-webkit-scrollbar-track {
+  background: #e8e4d9;
+}
+body.theme-math ::-webkit-scrollbar-thumb {
+  background: rgba(26, 26, 26, 0.2);
+  border-radius: 0;
+}
+body.theme-math ::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 26, 26, 0.4);
+}
+
+/* ── Math Sheet local styles ─────────────────────────────── */
+
+.math-sheet-ui {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.math-title {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  color: inherit;
+  letter-spacing: 0.02em;
+  font-weight: normal;
+}
+
+.math-sheet-paper {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.math-line-numbers {
+  padding-left: 10px;
+  padding-right: 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.22);
+  text-align: right;
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(0, 0, 0, 0.018);
+  user-select: none;
+  width: 44px;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.math-textarea {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  resize: none;
+  padding-left: 16px;
+  padding-right: 8px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.math-results-col {
+  width: 160px;
+  min-width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.012);
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.math-results {
+  flex: 1;
+  padding-left: 8px;
+  padding-right: 14px;
+  overflow: hidden;
+}
+
+.math-free-vars {
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  padding: 8px 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.math-free-vars-heading {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.32);
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.math-free-var-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.math-free-var-name {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  color: #0f766e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.math-free-var-input {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+  padding: 1px 5px;
+  width: 100%;
+  text-align: right;
+  outline: none;
+}
+
+.math-free-var-input:focus {
+  border-color: rgba(0, 0, 0, 0.35);
+  background: #fff;
+}
+
+.math-free-var-input::placeholder {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.math-result-line {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.math-result-value {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.32);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 138px;
+  display: block;
+}
+
+.math-result-error {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  color: rgba(139, 0, 0, 0.45);
+}
+
+.math-name-input {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  outline: 0;
+  padding: 4px 0;
+  width: 100%;
+}
+
+.math-name-input::placeholder {
+  color: rgba(0, 0, 0, 0.28);
+  font-style: italic;
+}
+
+.math-name-input:focus {
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+}
+
+.math-sheet-item {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.math-sheet-item:hover {
+  background: #faf9f6;
+}
+
+.math-sheet-item-name {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.math-sheet-item-preview {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.math-sheet-item-date {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.32);
+}
+
+.math-empty-text {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.math-new-sheet-btn {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.38);
+  background: transparent;
+  border: 1px dashed rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition:
+    color 0.1s,
+    border-color 0.1s;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+}
+
+.math-new-sheet-btn:hover {
+  color: rgba(0, 0, 0, 0.65);
+  border-color: rgba(0, 0, 0, 0.38);
+}
+
+/* ═══════════════════════════════════════════════════════════
    Home Theme  —  terminal / monospace, black + #FDE311
    ═══════════════════════════════════════════════════════════ */
 body.theme-home {
@@ -666,6 +986,8 @@ body.theme-home {
   --nav-inactive-color: rgba(255, 255, 255, 0.5);
   --nav-hover-bg: rgba(253, 227, 17, 0.12);
   --nav-hover-color: #fde311;
+
+  --color-primary: #fde311;
 }
 
 body.theme-home .sidebar-root {
@@ -692,12 +1014,6 @@ body.theme-home .text-white {
 /* Muted text stays white-toned */
 body.theme-home [class*="text-white/"] {
   color: rgba(255, 255, 255, 0.65);
-}
-
-/* Links — yellow */
-body.theme-home .text-blue-400,
-body.theme-home .text-blue-300 {
-  color: #fde311;
 }
 
 /* Code blocks */
@@ -727,4 +1043,267 @@ body.theme-home ::-webkit-scrollbar-thumb {
 }
 body.theme-home ::-webkit-scrollbar-thumb:hover {
   background: rgba(253, 227, 17, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Meme Theme  —  Neon memelord internet culture (2012–∞)
+   ═══════════════════════════════════════════════════════════ */
+
+body.theme-meme {
+  background-color: #0a0012;
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 0, 255, 0.07) 0px,
+      rgba(255, 0, 255, 0.07) 1px,
+      transparent 1px,
+      transparent 22px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 255, 255, 0.05) 0px,
+      rgba(0, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 22px
+    );
+  color: #ffffff;
+  font-family: "Bangers", Impact, "Arial Black", sans-serif;
+  letter-spacing: 0.03em;
+
+  --nav-active-bg: linear-gradient(135deg, #ff00ff, #ff0066);
+  --nav-active-color: #ffffff;
+  --nav-inactive-color: rgba(255, 100, 255, 0.65);
+  --nav-hover-bg: rgba(255, 0, 255, 0.18);
+  --nav-hover-color: #ff80ff;
+
+  --color-primary: #ff00ff;
+  --color-success: #00ff88;
+  --color-warning: #ffff00;
+  --color-danger: #ff0066;
+}
+
+body.theme-meme .sidebar-root {
+  background: rgba(15, 0, 25, 0.92);
+  border-color: #ff00ff;
+  border-radius: 0;
+  box-shadow:
+    0 0 18px rgba(255, 0, 255, 0.35),
+    inset 0 0 18px rgba(255, 0, 255, 0.06);
+}
+
+body.theme-meme .main-panel {
+  background: rgba(8, 0, 18, 0.88);
+  border-color: #ff00ff;
+  border-radius: 0;
+  box-shadow: 0 0 28px rgba(255, 0, 255, 0.18);
+}
+
+/* Nav active item — neon magenta glow */
+body.theme-meme .text-white {
+  color: #ffffff;
+}
+body.theme-meme [class*="text-white/"] {
+  color: rgba(255, 160, 255, 0.65);
+}
+body.theme-meme [class*="bg-white/"] {
+  background-color: rgba(255, 0, 255, 0.1);
+}
+body.theme-meme [class*="border-white/"] {
+  border-color: rgba(255, 0, 255, 0.3);
+}
+body.theme-meme [class*="border-dashed"] {
+  border-color: rgba(255, 0, 255, 0.35);
+}
+
+/* Inputs — dark neon */
+body.theme-meme input[type="text"],
+body.theme-meme input:not([type]),
+body.theme-meme textarea {
+  background: rgba(20, 0, 35, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 0, 255, 0.4);
+  outline: none;
+}
+body.theme-meme input[type="text"]:focus,
+body.theme-meme textarea:focus {
+  border-color: #ff00ff;
+  box-shadow: 0 0 8px rgba(255, 0, 255, 0.4);
+}
+
+/* Primary/indigo buttons — hot pink */
+body.theme-meme .bg-indigo-500,
+body.theme-meme .bg-blue-600 {
+  background: linear-gradient(135deg, #ff00ff, #cc00cc);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+body.theme-meme .bg-indigo-500:hover,
+body.theme-meme .hover\:bg-indigo-400:hover,
+body.theme-meme .bg-blue-600:hover,
+body.theme-meme .hover\:bg-blue-500:hover {
+  background: linear-gradient(135deg, #ff33ff, #dd00dd);
+  box-shadow: 0 0 18px rgba(255, 0, 255, 0.7);
+}
+body.theme-meme .bg-indigo-500.text-white,
+body.theme-meme [class*="bg-indigo-"] {
+  background: linear-gradient(135deg, #ff00ff, #cc00cc);
+  color: #ffffff;
+}
+
+/* Semantic colors */
+body.theme-meme .text-green-400,
+body.theme-meme .text-green-300 {
+  color: var(--color-success);
+}
+body.theme-meme .text-red-400,
+body.theme-meme .text-red-300 {
+  color: var(--color-danger);
+}
+body.theme-meme [class*="text-yellow-"] {
+  color: var(--color-warning);
+}
+body.theme-meme [class*="bg-red-"] {
+  background-color: rgba(255, 0, 102, 0.12);
+}
+body.theme-meme [class*="bg-yellow-"] {
+  background-color: rgba(255, 255, 0, 0.08);
+}
+body.theme-meme [class*="bg-green-"] {
+  background-color: rgba(0, 255, 136, 0.08);
+}
+body.theme-meme [class*="border-red-"] {
+  border-color: rgba(255, 0, 102, 0.4);
+}
+body.theme-meme [class*="border-yellow-"] {
+  border-color: rgba(255, 255, 0, 0.35);
+}
+body.theme-meme [class*="border-green-"] {
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+/* Scrollbars — neon pink */
+body.theme-meme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.theme-meme ::-webkit-scrollbar-track {
+  background: rgba(255, 0, 255, 0.06);
+}
+body.theme-meme ::-webkit-scrollbar-thumb {
+  background: rgba(255, 0, 255, 0.4);
+  border-radius: 4px;
+}
+body.theme-meme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 0, 255, 0.7);
+}
+
+/* ── Meme Creator component styles ─────────────────────────── */
+
+.meme-creator-ui .meme-active-btn {
+  background: linear-gradient(135deg, #ff00ff, #ff0080);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.55);
+}
+
+.meme-creator-ui .meme-download-btn {
+  background: linear-gradient(135deg, #ff00ff, #ff0080);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(255, 0, 255, 0.5);
+  font-family: "Bangers", Impact, "Arial Black", sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.meme-creator-ui .meme-download-btn:hover {
+  box-shadow: 0 0 24px rgba(255, 0, 255, 0.8);
+  transform: scale(1.03);
+}
+
+/* Cells get a neon border glow on hover */
+body.theme-meme .meme-creator-ui [class*="rounded-xl"] {
+  border-radius: 4px;
+}
+body.theme-meme .meme-creator-ui [class*="rounded-lg"] {
+  border-radius: 4px;
+}
+body.theme-meme .meme-creator-ui [class*="rounded-full"] {
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Matrix Theme  —  hacker terminal, black + #00ff41 green
+   ═══════════════════════════════════════════════════════════ */
+body.theme-matrix {
+  background-color: #000000;
+  background-image: none;
+  color: #00ff41;
+  font-family: "Courier New", Courier, monospace;
+
+  --nav-active-bg: #00ff41;
+  --nav-active-color: #000000;
+  --nav-inactive-color: #008f11;
+  --nav-hover-bg: rgba(0, 255, 65, 0.1);
+  --nav-hover-color: #00ff41;
+
+  --color-primary: #00ff41;
+  --color-success: #00ff41;
+  --color-warning: #ffe600;
+  --color-danger: #ff3b3b;
+}
+
+body.theme-matrix .sidebar-root {
+  background: rgba(0, 10, 0, 0.92);
+  border-color: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 18px rgba(0, 255, 65, 0.08);
+}
+
+body.theme-matrix .main-panel {
+  background: #000000;
+  border-color: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 24px rgba(0, 255, 65, 0.06);
+}
+
+body.theme-matrix * {
+  font-family: "Courier New", Courier, monospace;
+}
+
+body.theme-matrix .text-white {
+  color: #9fffb4;
+}
+body.theme-matrix [class*="text-white/"] {
+  color: #008f11;
+}
+body.theme-matrix [class*="bg-white/"] {
+  background-color: rgba(0, 255, 65, 0.05);
+}
+body.theme-matrix [class*="border-white/"] {
+  border-color: rgba(0, 255, 65, 0.15);
+}
+
+/* Semantic colors */
+body.theme-matrix .text-green-400,
+body.theme-matrix .text-green-300 {
+  color: #00ff41;
+}
+body.theme-matrix .text-red-400,
+body.theme-matrix .text-red-300 {
+  color: #ff3b3b;
+}
+body.theme-matrix [class*="text-yellow-"] {
+  color: #ffe600;
+}
+
+/* Scrollbars — subtle matrix green */
+body.theme-matrix ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+body.theme-matrix ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.theme-matrix ::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.25);
+}
+body.theme-matrix ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 65, 0.5);
 }

@@ -669,7 +669,7 @@ export const NlbSepa = () => {
         {/* Drop zone */}
         <button
           type="button"
-          className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg px-4 py-5 cursor-pointer transition-colors ${dragging ? 'border-blue-400 bg-blue-400/10' : 'border-white/20 hover:border-white/40'}`}
+          className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg px-4 py-5 cursor-pointer transition-colors ${dragging ? 'border-(--color-primary) bg-(--color-primary)/10' : 'border-white/20 hover:border-white/40'}`}
           onDragOver={(e) => {
             e.preventDefault();
             setDragging(true);

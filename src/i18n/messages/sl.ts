@@ -49,6 +49,68 @@ export const sl: Record<string, string> = {
   'pixel.delete': 'Izbriši',
   'pixel.art-alt': '{size}×{size} pikselska umetnost',
 
+  // Math Sheet UI
+  'gadget.math-sheet.name': 'Matematični list',
+  'math.title': 'Matematični list',
+  'math.free-vars': 'Spremenljivke',
+  'math.view.editor': 'Urejevalnik',
+  'math.view.sheets': 'Listi',
+  'math.sheet-name-placeholder': 'Neimenovan list…',
+  'math.untitled': 'Neimenovan',
+  'math.save': 'Shrani',
+  'math.no-sheets': 'Še ni shranjenih listov',
+  'math.new-sheet': 'Nov list',
+  'math.delete': 'Izbriši',
+  'math.view.help': 'Pomoč',
+  'math.help.arithmetic': 'Aritmetika',
+  'math.help.arithmetic.desc':
+    'Osnovni operatorji, potenciranje in ostanek pri deljenju (%).',
+  'math.help.variables': 'Spremenljivke',
+  'math.help.variables.desc':
+    'Dodeli vrednost z = in jo uporabi na katerikoli kasnejši vrstici.',
+  'math.help.comments': 'Komentarji',
+  'math.help.comments.desc': '// začne komentar — vse za tem je ignorirano.',
+  'math.help.parens': 'Oklepaji',
+  'math.help.parens.desc': 'Uporabi ( ) za nadzor vrstnega reda operacij.',
+  'math.help.functions': 'Matematične funkcije',
+  'math.help.functions.desc':
+    'Pokliči z oklepaji. Trigonometrične funkcije delujejo v radianih.',
+  'math.help.trig': 'Trigonometrija',
+  'math.help.trig.desc':
+    'Standardne trigonometrične in hiperbolične funkcije. Vhod v radianih — za pretvorbo stopenj uporabi pi.',
+  'math.help.funcN': 'Funkcije z več argumenti',
+  'math.help.funcN.desc': 'Funkcije, ki sprejmejo dva ali tri argumente.',
+  'math.help.constants': 'Vgrajene konstante',
+  'math.help.constants.desc':
+    'Ta imena so vnaprej definirana in takoj na voljo.',
+  'math.help.aliases': 'Vzdevki spremenljivk',
+  'math.help.aliases.desc':
+    'Prosti spremenljivki dodaj berljivo oznako z @alias. Oznaka se prikaže v panelu spremenljivk namesto surovega imena.',
+  'math.help.saving': 'Shranjevanje in nalaganje',
+  'math.help.saving.desc':
+    'Poimenuj list na vrhu in klikni Shrani. Shranjene liste odpri z zavihka Listi.',
+
+  // Meme Creator UI
+  'gadget.meme-creator.name': 'Ustvarjalnik memov',
+  'meme.layout': 'Razpored',
+  'meme.download': 'Shrani mem',
+  'meme.add-image': 'Dodaj sliko',
+  'meme.add-text': 'Dodaj besedilo',
+  'meme.drop-image': 'ali spusti sliko sem',
+  'meme.add-text-box': 'Dodaj besedilno polje',
+  'meme.hint-image': '📷 Spusti sliko v celico ali klikni Dodaj sliko',
+  'meme.hint-text': '✏️ Dvoklikni besedilo za urejanje',
+  'meme.hint-drag': '⠿ Povleci celice za razporejanje',
+
+  // Changelog UI
+  'gadget.changelog.name': 'Spremembe',
+  'changelog.commit-count': '{count} objav',
+  'changelog.status-hash': 'HASH',
+  'changelog.status-date': 'DATUM',
+  'changelog.status-subject': 'OPIS',
+  'changelog.status-author': 'AVTOR',
+  'changelog.no-body': '(ni opisa)',
+
   // Privacy Policy UI
   'privacy.official-document': '——— Uradni dokument ———',
   'privacy.app-name': 'Gadgets',

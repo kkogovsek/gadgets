@@ -1,3 +1,5 @@
+node scripts/generate-changelog.mjs
+git add src/gadgets/Changelog/changelog.json
 npm run check
 git update-index --again
 npm run test

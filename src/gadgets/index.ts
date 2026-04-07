@@ -1,5 +1,14 @@
 import type { LucideIcon } from 'lucide-react';
-import { Banknote, Grid2x2, House, ImagePlay, ShieldCheck } from 'lucide-react';
+import {
+  Banknote,
+  Grid2x2,
+  House,
+  ImagePlay,
+  Laugh,
+  ScrollText,
+  ShieldCheck,
+  Sigma,
+} from 'lucide-react';
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
 
@@ -47,6 +56,34 @@ export const gadgets: Gadget[] = [
       import('./PixelEditor').then((m) => ({ default: m.PixelEditor })),
     ),
     theme: 'mac',
+  },
+  {
+    id: 'math-sheet',
+    name: 'Math Sheet',
+    icon: Sigma,
+    component: lazy(() =>
+      import('./MathSheet').then((m) => ({ default: m.MathSheet })),
+    ),
+    theme: 'math',
+  },
+  {
+    id: 'meme-creator',
+    name: 'Meme Creator',
+    icon: Laugh,
+    component: lazy(() =>
+      import('./MemeCreator').then((m) => ({ default: m.MemeCreator })),
+    ),
+    theme: 'meme',
+  },
+  {
+    id: 'changelog',
+    name: 'Changelog',
+    icon: ScrollText,
+    component: lazy(() =>
+      import('./Changelog').then((m) => ({ default: m.Changelog })),
+    ),
+    pinBottom: true,
+    theme: 'matrix',
   },
   {
     id: 'privacy-policy',

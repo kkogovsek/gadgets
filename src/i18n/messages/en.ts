@@ -49,6 +49,68 @@ export const en: Record<string, string> = {
   'pixel.delete': 'Delete',
   'pixel.art-alt': '{size}×{size} pixel art',
 
+  // Math Sheet UI
+  'gadget.math-sheet.name': 'Math Sheet',
+  'math.title': 'Math Sheet',
+  'math.free-vars': 'Variables',
+  'math.view.editor': 'Editor',
+  'math.view.sheets': 'Sheets',
+  'math.sheet-name-placeholder': 'Untitled sheet…',
+  'math.untitled': 'Untitled',
+  'math.save': 'Save',
+  'math.no-sheets': 'No saved sheets yet',
+  'math.new-sheet': 'New sheet',
+  'math.delete': 'Delete',
+  'math.view.help': 'Help',
+  'math.help.arithmetic': 'Arithmetic',
+  'math.help.arithmetic.desc':
+    'Basic operators, exponentiation, and remainder (%).',
+  'math.help.variables': 'Variables',
+  'math.help.variables.desc':
+    'Assign a value with = and reuse it on any later line.',
+  'math.help.comments': 'Comments',
+  'math.help.comments.desc':
+    '// starts a comment — everything after it is ignored.',
+  'math.help.parens': 'Parentheses',
+  'math.help.parens.desc': 'Use ( ) to control order of operations.',
+  'math.help.functions': 'Math functions',
+  'math.help.functions.desc':
+    'Call with parentheses. Trig functions work in radians.',
+  'math.help.trig': 'Trigonometry',
+  'math.help.trig.desc':
+    'Standard trig and hyperbolic functions. Input in radians — use pi to convert degrees.',
+  'math.help.funcN': 'Multi-argument functions',
+  'math.help.funcN.desc': 'Functions that take two or three arguments.',
+  'math.help.constants': 'Built-in constants',
+  'math.help.constants.desc': 'These names are predefined and ready to use.',
+  'math.help.aliases': 'Variable aliases',
+  'math.help.aliases.desc':
+    'Give a free variable a human-readable label with @alias. The label appears in the variables panel instead of the raw name.',
+  'math.help.saving': 'Saving & loading',
+  'math.help.saving.desc':
+    'Give your sheet a name at the top and click Save. Open saved sheets from the Sheets tab.',
+
+  // Meme Creator UI
+  'gadget.meme-creator.name': 'Meme Creator',
+  'meme.layout': 'Layout',
+  'meme.download': 'Save meme',
+  'meme.add-image': 'Add image',
+  'meme.add-text': 'Add text',
+  'meme.drop-image': 'or drop image here',
+  'meme.add-text-box': 'Add text box',
+  'meme.hint-image': '📷 Drop image into cell or click Add image',
+  'meme.hint-text': '✏️ Double-click text to edit',
+  'meme.hint-drag': '⠿ Drag cells to reorder',
+
+  // Changelog UI
+  'gadget.changelog.name': 'Changelog',
+  'changelog.commit-count': '{count} commits',
+  'changelog.status-hash': 'HASH',
+  'changelog.status-date': 'DATE',
+  'changelog.status-subject': 'SUBJECT',
+  'changelog.status-author': 'AUTHOR',
+  'changelog.no-body': '(no description)',
+
   // Privacy Policy UI
   'privacy.official-document': '——— Official Document ———',
   'privacy.app-name': 'Gadgets',

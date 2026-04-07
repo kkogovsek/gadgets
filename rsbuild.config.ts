@@ -20,6 +20,7 @@ export default defineConfig({
     },
   },
   html: {
+    favicon: './public/favicon.ico',
     title: 'Gadgets',
     meta: {
       description: 'A collection of simple utility tools',

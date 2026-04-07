@@ -32,7 +32,7 @@ export const MarkdownView = ({ content }: { content: string }) => {
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="text-blue-400 hover:text-blue-300 underline"
+            className="text-(--color-primary) hover:opacity-80 underline"
           >
             {children}
           </a>
@@ -95,7 +95,7 @@ export const MarkdownView = ({ content }: { content: string }) => {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-2xl mx-auto px-2 py-4">{rendered}</div>
+      <div className="max-w-2xl px-2 py-4">{rendered}</div>
     </div>
   );
 };

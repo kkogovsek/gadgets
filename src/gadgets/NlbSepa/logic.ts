@@ -140,7 +140,7 @@ export function parseFile(filename: string, content: string): ParsedFile {
       datumPoravnave,
       stroski: Math.abs(parseFloat(get(r, iStroski).replace(',', '.')) || 0),
       idTransakcije: get(r, iId),
-      monthKey: datumPlacila.substring(0, 7),
+      monthKey: (datumPoravnave || datumPlacila).substring(0, 7),
     });
   }
   return { filename, transactions, currency };

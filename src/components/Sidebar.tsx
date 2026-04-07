@@ -59,7 +59,7 @@ export const Sidebar = ({
         title={minimal ? displayName : undefined}
         className={minimal ? 'justify-center' : 'justify-start'}
       >
-        <Icon size={minimal ? 24 : 18} strokeWidth={isActive ? 2.5 : 2} />
+        <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
         {!minimal && (
           <span className="text-sm font-medium truncate">{displayName}</span>
         )}
@@ -73,7 +73,7 @@ export const Sidebar = ({
     <div
       className={cn(
         'sidebar-root flex flex-col border border-white/10 rounded-xl gap-1 transition-all duration-200',
-        minimal ? 'w-14 p-2' : 'w-52 p-3',
+        minimal ? 'w-14 p-2' : 'w-52 p-2',
       )}
     >
       <div className="flex-1 flex flex-col gap-1 overflow-y-auto">
@@ -92,7 +92,7 @@ export const Sidebar = ({
         )}
         title={intl.formatMessage({ id: 'sidebar.github' })}
       >
-        <GitHubIcon size={minimal ? 24 : 18} />
+        <GitHubIcon size={18} />
         {!minimal && (
           <span className="text-sm font-medium">
             {intl.formatMessage({ id: 'sidebar.github' })}
@@ -108,7 +108,7 @@ export const Sidebar = ({
         title={intl.formatMessage({ id: 'sidebar.language' })}
         className={minimal ? 'justify-center' : 'justify-start'}
       >
-        <Globe size={minimal ? 24 : 18} strokeWidth={2} />
+        <Globe size={18} strokeWidth={2} />
         {!minimal && (
           <span className="text-sm font-medium">
             {locale === 'en' ? 'EN' : 'SL'}
@@ -129,7 +129,7 @@ export const Sidebar = ({
         className={minimal ? 'justify-center' : 'justify-start'}
       >
         {minimal ? (
-          <ChevronsRight size={22} strokeWidth={2} />
+          <ChevronsRight size={18} strokeWidth={2} />
         ) : (
           <ChevronsLeft size={18} strokeWidth={2} />
         )}

@@ -32,7 +32,7 @@ export const buttonVariants = cva(
         /** Circular delete/danger icon button */
         danger: 'rounded-full bg-black/60 hover:bg-red-500 text-white',
         /** Plain blue text link */
-        link: 'text-blue-400 hover:text-blue-300',
+        link: 'text-(--color-primary) hover:opacity-80',
         /** Muted text link */
         linkMuted: 'text-white/40 hover:text-white/60',
       },
@@ -71,7 +71,7 @@ export const buttonVariants = cva(
       {
         variant: 'tabUnderline',
         active: true,
-        class: 'border-blue-400 text-white',
+        class: 'border-(--color-primary) text-white',
       },
       {
         variant: 'tabUnderline',
@@ -93,7 +93,7 @@ export const buttonVariants = cva(
       {
         variant: 'toggleOutline',
         active: true,
-        class: 'bg-blue-500/30 border-blue-400 text-blue-200',
+        class: 'bg-green-500/20 border-green-400 text-green-300',
       },
       {
         variant: 'toggleOutline',

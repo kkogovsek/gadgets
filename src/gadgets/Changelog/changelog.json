@@ -1,0 +1,58 @@
+[
+  {
+    "hash": "10b88c1",
+    "date": "2026-04-01",
+    "subject": "Add IconCreator and PixelEditor gadgets, UI component library, and theming",
+    "author": "Klemen Kogovsek",
+    "body": "- New gadgets: IconCreator (SVG icon builder) and PixelEditor\n- Shared UI components: Button, Card, Badge, Input, Text\n- lib/utils.ts: cn() helper (clsx + tailwind-merge)\n- App.css: theme tokens + per-gadget themes (NLB Win95, pixel retro, etc.)\n- CLAUDE.md: document i18n conventions\n- i18n: add EN/SL keys for new gadgets\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "d9efe12",
+    "date": "2026-03-31",
+    "subject": "Add i18n support with English and Slovenian localization",
+    "author": "Klemen Kogovsek",
+    "body": "Introduces react-intl with a LocaleContext provider, EN/SL message files,\nand a language toggle in the sidebar. Gadget names and UI strings are now\ntranslatable, with Slovenian README/INFO content for Home and NLB SEPA.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "5953b2d",
+    "date": "2026-03-31",
+    "subject": "Add Cloudflare hosting disclosure to privacy policy",
+    "author": "Klemen Kogovsek",
+    "body": "The app is hosted on Cloudflare with observability enabled, but the\npolicy previously claimed no data collection at all. Added a hosting\ninfrastructure section in both EN and SL explaining that Cloudflare\nprocesses standard HTTP request metadata as the infrastructure provider.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "5e81231",
+    "date": "2026-03-31",
+    "subject": "Add remark-gfm and multi-currency summary stats in NLB SEPA",
+    "author": "Klemen Kogovsek",
+    "body": "- Add remark-gfm plugin to MarkdownView for GFM table/strikethrough support\n- Break down summary stats per currency when multiple currencies are present\n- Show info panel by default; hide after first file import\n- Add multi-currency hint in sidebar\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "045c3a9",
+    "date": "2026-03-31",
+    "subject": "Extract shared MarkdownView component, simplify Home and PrivacyPolicy",
+    "author": "Klemen Kogovsek",
+    "body": "Both gadgets now delegate to a single MarkdownView component instead of\nduplicating remark rendering logic. Adds a .md?raw type declaration to\nenv.d.ts and cleans up the README live link formatting.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "860696a",
+    "date": "2026-03-31",
+    "subject": "Add hash router, sidebar pinBottom support, and NLB SEPA preview panel",
+    "author": "Klemen Kogovsek",
+    "body": "Introduces a lightweight hash-based router (src/router.ts) so gadget\nnavigation is reflected in the URL. Sidebar gains a pinBottom gadget\nconcept replacing the hardcoded Privacy Policy button. NLB SEPA gets a\nfull preview panel with summary stats, CSV data checks, XML consistency\nchecks, double-accounting checks, and a transaction list view.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "1bf952d",
+    "date": "2026-03-31",
+    "subject": "Add Home and Privacy Policy gadgets, NLB SEPA improvements, and pre-commit hooks",
+    "author": "Klemen Kogovsek",
+    "body": "- Add Home landing gadget and Privacy Policy gadget (with markdown rendering)\n- Improve NLB SEPA converter UI and logic\n- Add husky pre-commit hook running lint checks and tests\n- Add markdown deps (react-markdown) for privacy policy rendering\n- Update README with app description and deployment URL\n- Update Cloudflare Workers config (wrangler.jsonc)\n- Add TODO.md\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+  },
+  {
+    "hash": "2b7a9b0",
+    "date": "2026-03-30",
+    "subject": "Initial",
+    "author": "Klemen Kogovsek",
+    "body": null
+  }
+]

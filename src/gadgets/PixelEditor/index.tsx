@@ -381,7 +381,7 @@ export const PixelEditor = () => {
       {view === 'editor' ? (
         <div className="flex gap-3 flex-1 min-h-0">
           {/* Controls */}
-          <div className="pixel-editor-controls flex flex-col gap-3 w-36 shrink-0">
+          <div className="pixel-editor-controls flex flex-col gap-2 w-36 shrink-0">
             {/* Canvas size */}
             <div className="flex flex-col gap-1">
               <span className="pixel-label">{t('pixel.canvas')}</span>
@@ -450,7 +450,7 @@ export const PixelEditor = () => {
                   type="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  className="w-8 h-8 cursor-pointer bg-transparent border-0 p-0.5 shrink-0"
+                  className="w-6 h-6 cursor-pointer bg-transparent border-0 p-0 shrink-0"
                 />
                 <span
                   className="text-white/60 truncate"
@@ -466,7 +466,7 @@ export const PixelEditor = () => {
                     type="button"
                     onClick={() => setColor(c)}
                     style={{ background: c }}
-                    className={`palette-swatch h-7 border ${color === c ? 'active border-white/80' : 'border-white/10'}`}
+                    className={`palette-swatch h-5 border ${color === c ? 'active border-white/80' : 'border-white/10'}`}
                   />
                 ))}
               </div>

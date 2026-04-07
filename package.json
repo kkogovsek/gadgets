@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rsbuild build",
+    "changelog": "node scripts/generate-changelog.mjs",
     "check": "biome check --write",
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
@@ -18,6 +19,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.7.0",
+    "ohm-js": "^17.5.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-intl": "^10.1.1",

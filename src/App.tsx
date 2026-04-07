@@ -10,7 +10,8 @@ const App = () => {
   const { path, navigate } = useRoute();
   const [minimal, setMinimal] = useState(false);
 
-  const gadgetId = path === '/' ? gadgets[0].id : path.slice(1);
+  const homeId = gadgets[0].id;
+  const gadgetId = path === '/' ? homeId : path.slice(1);
   const activeGadget = gadgets.find((g) => g.id === gadgetId) ?? gadgets[0];
   const GadgetComponent = activeGadget.component;
 
@@ -22,13 +23,17 @@ const App = () => {
     };
   }, [activeGadget.theme]);
 
+  useEffect(() => {
+    document.title = activeGadget.name;
+  }, [activeGadget.name]);
+
   return (
     <LocaleProvider>
       <div className="flex h-screen p-4 gap-4">
         <Sidebar
           gadgets={gadgets}
           activeId={activeGadget.id}
-          onSelect={(id) => navigate(`/${id}`)}
+          onSelect={(id) => navigate(id === homeId ? '/' : `/${id}`)}
           minimal={minimal}
           onToggleMinimal={() => setMinimal((m) => !m)}
         />
